@@ -47,7 +47,6 @@ def jsonify_films():
             links[i]["distance"] = (max(-2.5, min(10, (links[i]["distance"] - dist_mean)/dist_std)) / 5) + 0.5
     return jsonify({"nodes": nodes, "links": links})
 
-
 def calculate_weights(weights_str):
     # Converts String of weights to float values and normalizes these values by their max value.
     # @return:  list of weights
@@ -58,11 +57,9 @@ def calculate_weights(weights_str):
     weights = [w/max_ for w in weights]
     return weights
 
-
 @app.route('/')
 def start():
     return render_template('index.html')
-
 
 @app.route('/get_search_data/', methods=['POST'])
 def get_search_data():
@@ -72,7 +69,6 @@ def get_search_data():
     results = db.get_search_data()
     return jsonify({"results": results})
 
-
 def append_to_current_films(films):
     # Appends an instance of Film to current_films, prevents doubles.
 
@@ -80,7 +76,6 @@ def append_to_current_films(films):
     for film in films:
         if film.id not in [f.id for f in current_films]:
             current_films.append(film)
-
 
 @app.route('/add_film/<film_id>', methods=['POST'])
 def add_film(film_id):
@@ -97,7 +92,6 @@ def add_film(film_id):
         return 'None'
     append_to_current_films([film])
     return update_weights(weights)
-
 
 @app.route('/add_similar_films/<film_id>/<number>/<weights>', methods=['POST'])
 def add_similar_films(film_id, number, weights):
@@ -116,7 +110,6 @@ def add_similar_films(film_id, number, weights):
     similar_films = similar_films[:number]
     append_to_current_films([film] + similar_films)
     return update_weights(weights)
-
 
 @app.route('/update_weights/<weights>', methods=['POST'])
 def update_weights(weights):
@@ -247,7 +240,6 @@ def get_compare_data(film_left_id, film_right_id):
     }
 
     return jsonify(output)
-
 
 if __name__ == '__main__':
     db = Database()
