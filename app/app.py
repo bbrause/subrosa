@@ -45,8 +45,6 @@ def jsonify_films():
         dist_std = max(0.001,np.std(distances))
         for i in range(len(links)):
             links[i]["distance"] = (max(-2.5, min(10, (links[i]["distance"] - dist_mean)/dist_std)) / 5) + 0.5
-
-    print(links)
     return jsonify({"nodes": nodes, "links": links})
 
 
