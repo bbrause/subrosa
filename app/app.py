@@ -1,4 +1,4 @@
-# SUB ROSA web application v0.1
+# SUB ROSA v0.1
 # 2019
 #
 # author:  Jan Luhmann
