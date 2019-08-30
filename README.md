@@ -4,7 +4,7 @@ subtitle-based film similarities
 ----
 
 Do similar films use a similar language? SUB ROSA addresses this question by giving users the ability to examine movies for  speech-related features. These features are extracted from subtitle data using popular methods from Natural Language Processing, Stylometry and Information Retrieval.  
-For detailed information about these methods, please read our [paper](https://github.com/bbrause/subrosa/raw/master/Luhmann_2019_MovieSimilarities.pdf). 
+For detailed information about these methods, please read this [paper](https://github.com/bbrause/subrosa/raw/master/Luhmann_2019_MovieSimilarities.pdf). 
 
 ----
 
