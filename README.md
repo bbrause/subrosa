@@ -1,5 +1,4 @@
-![#SUB ROSA](https://raw.githubusercontent.com/bbrause/subrosa/master/images/subrosa_logo.png "SUB ROSA") 
-
+<img src="https://raw.githubusercontent.com/bbrause/subrosa/master/images/subrosa_logo.png" alt="SUB ROSA" title="SUB ROSA" height="120"/>
 subtitle-based film similarities
 
 ----
