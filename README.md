@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/bbrause/subrosa/master/images/subrosa_logo.png" alt="SUB ROSA" title="SUB ROSA" height="120"/>
+<img src="https://raw.githubusercontent.com/bbrause/subrosa/master/img/subrosa_logo.png" alt="SUB ROSA" title="SUB ROSA" height="120"/>
 subtitle-based film similarities
 
 ----
@@ -11,4 +11,4 @@ For detailed information about these methods, please read this [paper](https://g
 This work was realized by Jan Luhmann as part of the course ”Drama Mining und Film-Analyse” (summer semester 2019) under the supervision of Manuel Burghardt and Jochen Tiepmar at the University of Leipzig.  
 
 Subtitle data was kindly provided by the team of OpenSubtitles.  
-<img src="https://raw.githubusercontent.com/bbrause/subrosa/master/images/opensubtitles_logo.png" title="OpenSubtitles" height="120"/>
+<img src="https://raw.githubusercontent.com/bbrause/subrosa/master/img/opensubtitles_logo.png" title="OpenSubtitles" height="120"/>
