@@ -1,6 +1,5 @@
 import sqlite3
 import numpy as np
-from database_helper import sparse_to_dense
 
 class Database:
     
