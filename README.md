@@ -1,10 +1,10 @@
 <img src="https://raw.githubusercontent.com/bbrause/subrosa/master/img/subrosa_logo.png" alt="SUB ROSA" title="SUB ROSA" height="120" align="left">
-# SUB ROSA
+**SUB ROSA**
 
 subtitle-based film similarities 
 
 
-<img src="https://img.shields.io/github/repo-size/bbrause/subrosa" alt="" title=""/>
+<img src="https://img.shields.io/github/repo-size/bbrause/subrosa" alt="" title=""/> <img src="https://img.shields.io/github/last-commit/bbrause/subrosa"/> <img src="https://img.shields.io/pypi/pyversions/subrosa"/>
 
 
 ----
