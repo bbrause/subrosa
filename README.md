@@ -4,7 +4,7 @@ SUB ROSA
 subtitle-based film similarities 
 
 
-<img src="https://img.shields.io/github/repo-size/bbrause/subrosa" alt="" title=""/> <img src="https://img.shields.io/github/last-commit/bbrause/subrosa"/> <img src="https://img.shields.io/pypi/pyversions/subrosa"/>
+<img src="https://img.shields.io/github/license/bbrause/subrosa"/> <img src="https://img.shields.io/github/repo-size/bbrause/subrosa" alt="" title=""/> <img src="https://img.shields.io/github/last-commit/bbrause/subrosa"/> 
 
 ----
 
