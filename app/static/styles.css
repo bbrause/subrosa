@@ -1,0 +1,385 @@
+body {
+  font-family: sans-serif;
+  font-size: 90%;
+}
+
+h3 {
+  font-size: 90%;
+  font-weight: normal;
+}
+
+.links line {
+  stroke: #000;
+  stroke-opacity: 0.02;
+}
+
+.nodes text {
+  color: #000;
+  font-size: 80%;
+}
+
+.graphbox {
+    grid-area: graphbox;
+    overflow: hidden;
+    height: auto;
+    max-height:95vh;
+    z-index: 0;
+}
+
+.graphbox text {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+     -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* Internet Explorer/Edge */
+          user-select: none; /* Non-prefixed version, currently
+                                supported by Chrome and Opera */
+  cursor: default;
+}
+
+.comparebox {
+    display: none;
+		grid-area: comparebox;
+    padding: 10px;
+}
+
+.graph_speechtempo, .graph_sentiment {
+  width: 100%;
+  text-align: center;
+}
+
+.infobox {
+    position: absolute;
+    background-color: transparent;
+    grid-area: graphbox;
+    text-align: right;
+    top:10px;
+    right:10px;
+    display: none;
+    z-index: 2;
+}
+
+.scrollbox {
+  position: absolute;
+  background-color: transparent;
+  grid-area: graphbox;
+  text-align: right;
+  top:10px;
+  right:10px;
+  height: 100%;
+  width: 5em;
+  z-index: 1;
+}
+
+.infobox a {
+  font-size: 80%;
+  color: #888;
+}
+
+.comparebox a {
+  font-size: 80%;
+  color: #888;
+}
+
+.infobox button {
+  padding: 0.25em;
+  border: 1px;
+  margin: 0.33em 0 0;
+}
+
+.infobox button[id=add_similar_films_shortcut] {
+  margin: 0.66em 0 0 0;
+}
+
+.graph {
+  width: 100%;
+  height: 100%;
+}
+
+.box {
+  background-color: #f7f3f2;
+  color: #000;
+}
+
+.header {
+  position: relative;
+  grid-area: header;
+  height: 3em;
+  background-image: linear-gradient(to right bottom, #f08080, #f28a8a, #f49393, #f59d9d, #f6a6a6);
+  padding: 10px;
+}
+
+.header #app_title {
+  position: absolute;
+  top:50%;
+  left: 12px;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  color: #fff;
+  font-size: 250%;
+  font-weight: bold;
+}
+
+.header #app_subtitle {
+  position: absolute;
+  top:48.5%;
+  left:19.5em;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  text-align: left;
+  color: #fff;
+  font-size: 90%;
+  font-weight: normal;
+}
+
+.header #shutdown {
+  position: absolute;
+  top:48.5%;
+  right: 10px;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  height: 3em;
+  width: 3em;
+  cursor: pointer;
+}
+
+#shutdown img {
+  height: 3em;
+  width: 3em;
+}
+
+.header #dialog {
+  position: absolute;
+  top:50%;
+  right: 12em;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  text-align: left;
+  color: #fff;
+  font-size: 95%;
+  font-weight: bold;
+}
+
+.header a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+
+.sidebar {
+  grid-area: sidebar;
+  padding: 1em;
+  font-size: 90%;
+  padding: 10px;
+}
+
+.sidebar input[id=film_search] {
+  float: left;
+  padding: 0.25em;
+  border: none;
+  margin: 0;
+  font-size: 100%;
+  height: 1.66em;
+  width: calc(100% - 0.5em);
+}
+
+.sidebar input[id=film_search_id] {
+  display: none;
+}
+
+.sidebar #autocomplete {
+  background: transparent;
+  border: 0;
+  position: absolute;
+}
+
+.ui-autocomplete {
+  background: white;
+  width: 26.4em;
+  max-height: 50vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: default;
+  list-style: none;
+}
+
+.ui-autocomplete li:hover {
+    font-weight: bold;
+}
+
+button:active, button:focus, input:focus, select:focus {
+  box-shadow: inset 0 0 2px;
+  outline: 0;
+}
+
+button[id=add_film] {
+  padding: 0.25em;
+  border: none;
+  margin: 0.33em 0 0;
+  font-size:100%;
+  height: 3em;
+  width: 4.25em;
+  vertical-align: top;
+}
+
+button[id=add_similar_films] {
+  padding: 0.25em;
+  border: none;
+  margin: 0.33em 0 0;
+  font-size:100%;
+  height: 3em;
+  width: 7.1em;
+  vertical-align: top;
+}
+
+select[id=numberselect] {
+  padding: 0.25em;
+  border: 0;
+  margin: 0.33em 0 0;
+  font-size: 90%;
+  height: 2em;
+  width: 4.25em;
+  border-radius: 0;
+  background-color: white;
+}
+
+button[id=update] {
+  width: 100%;
+  border: none;
+  height: 2em;
+  margin: 1em 0 0.33em 0;
+}
+
+button[id=clear] {
+  width: 100%;
+  border: none;
+  height: 2em;
+  margin: 0.33em 0;
+}
+
+.sidebar h1 {
+  font-size: 105%;
+  font-weight: normal;
+  margin: 0.33em 0 1.33em 0;
+}
+
+.slidecontainer {
+  width: 100%; 
+  margin: 0.33em 0;
+  font-size: 90%;
+}
+
+.colorselect_container {
+  width: 100%; 
+  margin: 0.66em 0;
+  font-size: 90%;
+  float: right;
+}
+
+select[id="colorselect"] {
+  width: auto;
+  border: 0;
+  float:right;
+}
+
+input[type=checkbox] {
+  font-size: 133%;
+  float:right;
+}
+
+.slider {
+  box-shadow: 0;
+  appearance: none;
+  background-color: white;
+  width: 100%;
+  height: 2em;
+  margin: 0;
+}
+
+.link {
+    stroke: #999;
+    stroke-opacity: 0.6;
+  }
+  
+.node {
+    stroke: #fff;
+    stroke-width: 1.5px;
+  }
+  
+text {
+    font-family: sans-serif;
+    font-size: 10px;
+  }
+
+
+span#film_genres, span#left_film_genres, span#right_film_genres {
+  font-size: 80%;
+  color: #888;
+}
+
+#metadata-left {
+  grid-area: metadata-left;
+  text-align: left;
+}
+
+#metadata-right {
+  grid-area: metadata-right;
+  text-align: right;
+}
+
+#comparebox-header {
+  display: grid;
+  grid-gap: 1em;
+  grid-template-areas:
+  "metadata-left metadata-right";
+  margin: 0 0 0.66em 0;
+}
+
+#tokens-cloud-left {
+  text-align: left;
+}
+
+#tokens-cloud-right {
+  text-align: right;
+}
+
+#tokens-cloud-compare {
+  text-align: center;
+}
+
+#tokens-wrapper {
+  display: grid;
+  grid-gap: 3em;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+#postags-wrapper, #stopwords-wrapper {
+  display: grid;
+  grid-gap: 3em;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.wrapper {
+  display: grid;
+  margin: 0 0.5em 0 0;
+  grid-gap: 1em;
+  grid-template-areas:
+   "header"
+   "sidebar"
+   "graphbox"
+   "comparebox"
+}
+
+@media only screen and (min-width: 500px)   {
+.wrapper {
+    grid-gap: 0.33em;
+    grid-template-columns: 16em auto;
+    grid-template-areas:
+    "header  header"
+    "sidebar graphbox"
+    "comparebox comparebox";
+    position: relative;
+  }
+}

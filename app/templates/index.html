@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <meta name="application-name" content="Sub Rosa">
+  <title>Sub Rosa</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='jquery-ui.min.css')}}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
+  <script src="{{ url_for('static', filename='jquery-1.12.4.js')}}"></script>
+  <script src="{{ url_for('static', filename='jquery-ui.js')}}"></script>
+  <script src="{{ url_for('static', filename='fuse.min.js')}}"></script>
+  <script src="{{ url_for('static', filename='d3.v4.min.js')}}"></script>
+  <script src="{{ url_for('static', filename='d3-legend.min.js')}}"></script>
+  <script type="text/javascript">
+    (function($) {
+        $(function() {
+            $("#comparebox-wrapper > div").accordion({ header: "h3", collapsible: true, active: false, heightStyle: "content" });
+        })
+    })(jQuery);
+  </script>
+</head>
+<body>
+<div class="wrapper">
+  <div class="box header"><div id="app_title">SUB ROSA</div>
+    <div id="dialog"></div>
+    <div id="app_subtitle">subtitle-based<br>film similarities:<br><i><a href="https://www.youtube.com/watch?v=0uXuNPPuh8Q" target="_blank">Interesting Results.</a></i></div>
+    <div id="shutdown"><img src="{{ url_for('static', filename='shutdown.png')}}" alt="EXIT"></div>
+  </div>
+
+  <div class="box sidebar">
+    <div id="autocomplete"></div>
+    <input type="text" id="film_search_id">
+    <input type="text" id="film_search" placeholder="Search...">
+    <button id="add_film">Add Film</button>
+    <button id="add_similar_films">Add Similar Films</button>
+    <select id="numberselect">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+    </select>
+  <br><br>
+    <h1>Weights of Similarity Measures</h1>
+      <div class="slidecontainer">
+        Lemmatized Tokens, <span id="tokens_weight"></span>%
+        <input type="range" min="0" max="100" step="5" value="50" class="slider" id="tokens">
+      </div>
+      <div class="slidecontainer">
+        Speech Tempo, <span id="tempo_weight"></span>%
+        <input type="range" min="0" max="100" step="5" value="25" class="slider" id="tempo">
+      </div>
+      <div class="slidecontainer">
+        Sentiment, <span id="sentiment_weight"></span>%
+        <input type="range" min="0" max="100" step="5" value="75" class="slider" id="sentiment">
+      </div>
+      <div class="slidecontainer">
+        Syntax, <span id="postags_weight"></span>%
+        <input type="range" min="0" max="100" step="5" value="35" class="slider" id="postags">
+      </div>
+      <div class="slidecontainer">
+        Stopwords, <span id="stopwords_weight"></span>%
+        <input type="range" min="0" max="100" step="5" value="35" class="slider" id="stopwords">
+      </div>
+      <div class="slidecontainer">
+        Stylometric Features, <span id="stylometric_weight"></span>%
+        <input type="range" min="0" max="100" step="5" value="100" class="slider" id="stylometric">
+      </div>
+      <div class="colorselect_container">
+        color by <select id="colorselect">
+            <option value="none">none</option>
+            <option value="genre" selected="selected">genre</option>
+            <option value="year">release date</option></select><br><br>
+        node size by popularity <input type="checkbox"></input>
+        </div>
+    <button id="update">Update Weights</button>
+    <button id="clear">Clear Graph</button>
+    </div>
+
+  <div class="box graphbox">
+    <div class="graph" width="100%" height="100%"><div class="nodes"></div></div>
+    <div class="infobox">
+        <div id="filminfo">
+          <span id="film_title"></span>
+          <span id="film_year"></span><br>
+          <span id="film_genres"></span><br>
+          <a id="imdb_link" target="_blank"></a><br>
+          <button id="add_similar_films_shortcut">Add Similar Films</button><br>
+          <button id="compare_left">Compare Left</button><br>
+          <button id="compare_right">Compare Right</button><br>
+          <button id="remove_film">Remove Film</button>
+        </div>
+        </div>
+    <div class="scrollbox"></div>
+  </div>
+  
+  <div class="box comparebox">
+      <div id="comparebox-header">
+      <div id="metadata-left">
+          <span id="left_film_title"></span>
+          <span id="left_film_year"></span><br>
+          <span id="left_film_genres"></span><br>
+          <a id="left_imdb_link" target="_blank"></a><br>
+      </div>
+      <div id="metadata-right">
+          <span id="right_film_title"></span>
+          <span id="right_film_year"></span><br>
+          <span id="right_film_genres"></span><br>
+          <a id="right_imdb_link" target="_blank"></a><br>
+      </div>
+    </div>
+    <div id="comparebox-wrapper">
+      <div id="tokens">
+        <h3>Tokens</h3>
+        <div id="tokens-wrapper">
+          <div id="tokens-cloud-left">
+          </div>
+          <div id="tokens-cloud-compare">
+          </div>
+          <div id="tokens-cloud-right">
+        </div>
+      </div>
+      </div>
+      <div id="speechtempo">
+          <h3>Speech Tempo</h3><div>
+              <select id="speechtempo_scale">
+                  <option value="percent">relative (percent)</option>
+                  <option value="minute">absolute (minutes)</option>
+              </select>
+              <select id="speechtempo_window">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="5">5</option>
+              </select>
+            <div class="graph_speechtempo"></div>
+          </div>
+      </div>
+      <div id="sentiment">
+          <h3>Sentiment</h3><div>
+              <select id="sentiment_scale">
+                  <option value="percent">relative (percent)</option>
+                  <option value="minute">absolute (minutes)</option>
+              </select>
+              <select id="sentiment_window">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="5">5</option>
+              </select>
+            <div class="graph_sentiment"></div>
+            </div>
+      </div>
+      <div id="stylometric">
+          <h3>Stylometric Features</h3><div>
+            <div id="stylometric_table"></div>
+          </div>
+      </div>
+      <div id="postags">
+          <h3>Syntax</h3><div id="postags-wrapper">
+            <div id="postags_table_left"></div>
+            <div></div>
+            <div id="postags_table_right"></div>
+          </div>
+        </div>
+        <div id="stopwords">
+          <h3>Stopwords</h3><div id="stopwords-wrapper">
+              <div id="stopwords_table_left"></div>
+              <div></div>
+              <div id="stopwords_table_right"></div>
+            </div>
+        </div>
+    </div>
+  </div>
+  </div>
+
+<script src="{{ url_for('static', filename='index.js')}}"></script>
+</body>
+</html>
+    

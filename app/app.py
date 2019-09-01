@@ -6,6 +6,7 @@
 
 import numpy as np
 import webbrowser
+from werkzeug.serving import run_simple
 from threading import Timer
 
 from database import Database
@@ -13,6 +14,7 @@ from film import Film
 from methods import *
 
 from flask import Flask, request, jsonify, render_template
+
 app = Flask(__name__)
 
 def jsonify_films():
@@ -241,10 +243,21 @@ def get_compare_data(film_left_id, film_right_id):
 
     return jsonify(output)
 
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    shutdown_server()
+    return 'Server shutting down...'
+
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+
 if __name__ == '__main__':
     db = Database()
     current_films = []
     weights = [1,1,1,1,1,1]
 
-    Timer(1.25, lambda: webbrowser.open("http://0.0.0.0:5000")).start()
-    app.run(host="0.0.0.0", debug=False)
+    Timer(1.25, lambda: webbrowser.open("http://0.0.0.0:8000")).start()
+    run_simple('0.0.0.0', 8000, app)
