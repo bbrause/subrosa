@@ -11,5 +11,5 @@ For detailed information about these methods, please read this [paper](https://g
 
 This work was realized by Jan Luhmann as part of the course ”Drama Mining und Film-Analyse” (summer semester 2019) under the supervision of Manuel Burghardt and Jochen Tiepmar at the University of Leipzig.  
 
-Subtitle data was kindly provided by the team of <a href="http://www.opensubtitles.org">OpenSubtitles.  
-<a href="http://www.opensubtitles.org"><img src="https://raw.githubusercontent.com/bbrause/subrosa/master/img/opensubtitles_logo.png" title="OpenSubtitles" height="120"/></a>
+Subtitle data was kindly provided by the team of <a href="http://www.opensubtitles.org" target="_blank">OpenSubtitles.  
+<a href="http://www.opensubtitles.org" target="_blank"><img src="https://raw.githubusercontent.com/bbrause/subrosa/master/img/opensubtitles_logo.png" title="OpenSubtitles" height="120"/></a>
