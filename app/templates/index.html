@@ -41,30 +41,30 @@
         <option value="25">25</option>
     </select>
   <br><br>
-    <h1>Weights of Similarity Measures</h1>
+    <h1>Weights of Feature Models</h1>
       <div class="slidecontainer">
-        Lemmatized Tokens, <span id="tokens_weight"></span>%
+        Bag-of-Words, <span id="tokens_weight"></span>%
         <input type="range" min="0" max="100" step="5" value="50" class="slider" id="tokens">
-      </div>
-      <div class="slidecontainer">
-        Speech Tempo, <span id="tempo_weight"></span>%
-        <input type="range" min="0" max="100" step="5" value="25" class="slider" id="tempo">
-      </div>
-      <div class="slidecontainer">
-        Sentiment, <span id="sentiment_weight"></span>%
-        <input type="range" min="0" max="100" step="5" value="75" class="slider" id="sentiment">
       </div>
       <div class="slidecontainer">
         Syntax, <span id="postags_weight"></span>%
         <input type="range" min="0" max="100" step="5" value="35" class="slider" id="postags">
       </div>
       <div class="slidecontainer">
-        Stopwords, <span id="stopwords_weight"></span>%
+        Stop Words, <span id="stopwords_weight"></span>%
         <input type="range" min="0" max="100" step="5" value="35" class="slider" id="stopwords">
       </div>
       <div class="slidecontainer">
         Stylometric Features, <span id="stylometric_weight"></span>%
         <input type="range" min="0" max="100" step="5" value="100" class="slider" id="stylometric">
+      </div>
+      <div class="slidecontainer">
+        Sentiment, <span id="sentiment_weight"></span>%
+        <input type="range" min="0" max="100" step="5" value="75" class="slider" id="sentiment">
+      </div>
+      <div class="slidecontainer">
+        Speech Tempo, <span id="tempo_weight"></span>%
+        <input type="range" min="0" max="100" step="5" value="25" class="slider" id="tempo">
       </div>
       <div class="colorselect_container">
         color by <select id="colorselect">
@@ -73,8 +73,9 @@
             <option value="year">release date</option></select><br><br>
         node size by popularity <input type="checkbox"></input>
         </div>
-    <button id="update">Update Weights</button>
+    <button id="update">Update Graph</button>
     <button id="clear">Clear Graph</button>
+    <br><br><hr>For more detailed information about each feature model, please read our <a href="https://github.com/bbrause/subrosa/blob/master/Luhmann_2019_MovieSimilarities.pdf">paper</a>.
     </div>
 
   <div class="box graphbox">

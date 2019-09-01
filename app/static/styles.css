@@ -173,6 +173,13 @@ h3 {
   padding: 10px;
 }
 
+.sidebar hr {
+  color: white;
+  background-color: white;
+  border-width: 0;
+  height: 2px;
+}
+
 .sidebar input[id=film_search] {
   float: left;
   padding: 0.25em;
