@@ -24,7 +24,7 @@ class Database:
         # Try to connect to database
         # @return: connection, cursor (if successful)
         try:
-            conn = sqlite3.connect("database_dense.db", detect_types=sqlite3.PARSE_DECLTYPES)
+            conn = sqlite3.connect("database.db", detect_types=sqlite3.PARSE_DECLTYPES)
             cursor = conn.cursor()
             return conn, cursor
         except Exception as e:
