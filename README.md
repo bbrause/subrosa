@@ -4,7 +4,7 @@ SUB ROSA
 subtitle-based film similarities 
 
 
-<img src="https://img.shields.io/github/license/bbrause/subrosa?color=Lightgray/> <img src="https://img.shields.io/github/repo-size/bbrause/subrosa?color=Lightgray" alt="" title=""/> <img src="https://img.shields.io/github/last-commit/bbrause/subrosa?color=Lightgray"/> 
+<img src="https://img.shields.io/github/license/bbrause/subrosa?color=Lightgray"/> <img src="https://img.shields.io/github/repo-size/bbrause/subrosa?color=Lightgray"/> <img src="https://img.shields.io/github/last-commit/bbrause/subrosa?color=Lightgray"/> 
 
 ----
 
