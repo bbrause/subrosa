@@ -6,7 +6,6 @@ subtitle-based film similarities
 
 <img src="https://img.shields.io/github/repo-size/bbrause/subrosa" alt="" title=""/> <img src="https://img.shields.io/github/last-commit/bbrause/subrosa"/> <img src="https://img.shields.io/pypi/pyversions/subrosa"/>
 
-
 ----
 
 Do similar films use a similar language? SUB ROSA addresses this question by giving users the ability to examine movies for  speech-related features. These features are extracted from subtitle data using methods from Natural Language Processing, Stylometry and Information Retrieval.  
