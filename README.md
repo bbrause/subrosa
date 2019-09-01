@@ -1,5 +1,5 @@
 <img src="https://raw.githubusercontent.com/bbrause/subrosa/master/img/subrosa_logo.png" alt="SUB ROSA" title="SUB ROSA" height="120" align="left">
-#SUB ROSA
+# SUB ROSA
 
 subtitle-based film similarities 
 
