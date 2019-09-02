@@ -91,7 +91,6 @@ def get_similar_films(db, main_film_id, weights=[1,1,1,1,1,1]):
         similar_film.set_distance(main_film_id, distance)
         similar_film.set_metadata(db)
         similar_film.set_vectors(vectors)
-        print(similar_film.title)
         similar_films_instances.append(similar_film)
     
     vector_matrix = [(film.id,) + film.vectors for film in similar_films_instances]
