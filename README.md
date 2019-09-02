@@ -13,3 +13,18 @@ This work was realized by Jan Luhmann as part of the course ”Drama Mining und 
 
 Subtitle data was kindly provided by the team of <a href="http://www.opensubtitles.org" target="_blank">OpenSubtitles.  
 <a href="http://www.opensubtitles.org" target="_blank"><img src="https://raw.githubusercontent.com/bbrause/subrosa/master/img/opensubtitles_logo.png" title="OpenSubtitles" height="120"/></a>
+  
+----
+  
+### Installation
+
+1. Please install Git LFS ([GitHub Large File Storage](https://git-lfs.github.com/)).
+2. Clone this repository.
+```
+git clone https://github.com/bbrause/subrosa.git
+```
+3. Move to the repository folder and start the app.
+```
+cd subrosa
+python3 app/app.py
+```
