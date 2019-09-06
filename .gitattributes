@@ -1,1 +1,4 @@
 *.db filter=lfs diff=lfs merge=lfs -text
+
+app/static/*.js linguist-vendored=false
+2D_projections linguist-vendored=false
