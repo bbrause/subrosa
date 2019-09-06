@@ -1,4 +1,10 @@
 *.db filter=lfs diff=lfs merge=lfs -text
 
-app/static/*.js linguist-vendored=false
+app/static/d3-legend.min.js linguist-vendored=false
+app/static/d3.v4.min.js linguist-vendored=false
+app/static/fuse.min.js linguist-vendored=false
+app/static/jquery-1.12.4.js linguist-vendored=false
+app/static/jquery-ui.js linguist-vendored=false
+app/static/jquery-ui.min.css linguist-vendored=false
+app/static/jquery.autocomplete.min.js linguist-vendored=false
 2D_projections linguist-vendored=false
