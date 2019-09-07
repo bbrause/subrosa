@@ -1,3 +1,9 @@
+# SUB ROSA v0.1
+# 2019
+#
+# author:  Jan Luhmann
+# license: GNU General Public License v3.0
+
 import pickle
 import os
 import sqlite3
@@ -5,6 +11,8 @@ import numpy as np
 import pandas as pd
 from nltk import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Register adapter for storing numpy arrays in SQLite database
 
 def adapt_array(arr):
     return arr.tobytes()
@@ -14,6 +22,20 @@ def convert_array(text):
   
 sqlite3.register_adapter(np.array, adapt_array)    
 sqlite3.register_converter("array", convert_array)
+
+# Read metadata
+
+ids = pd.read_csv("imdb_sub_ids.tsv", sep="\t")
+ids = ids.drop(ids.columns[0], axis = 1)
+
+# Read docs of unlemmatized tokens
+
+docs_tokens = []
+
+for file in os.listdir("pickles/docs_tokens/"):
+  docs_tokens += pickle.load(open("pickles/docs_tokens/" + file, "rb"))
+
+# Stopwords list created manually from NLTKs stopwords & our corpus
 
 stopwords_edited = ['you',
  'i',
@@ -110,11 +132,13 @@ stopwords_edited = ['you',
  'which',
  'only']
 
+# Generate Stopwords Distribution vectors
 
 def dummy_fun(doc):
   return doc
   
 def preprocessor(doc):
+  # Checks doc for words containing apostrophe --> contractions, use NLTK to split these
   out =[]
   for w in doc:
     w = w.strip(string.punctuation)
@@ -127,14 +151,6 @@ def preprocessor(doc):
       else:
         out.append(w)
   return out
-
-ids = pd.read_csv("imdb_sub_ids.tsv", sep="\t")
-ids = ids.drop(ids.columns[0], axis = 1)
-
-docs_tokens = []
-
-for file in os.listdir("pickles/docs_tokens/"):
-  docs_tokens += pickle.load(open("pickles/docs_tokens/" + file, "rb"))
   
 vect = TfidfVectorizer(analyzer='word',
                 tokenizer=dummy_fun,
@@ -147,16 +163,19 @@ vect = TfidfVectorizer(analyzer='word',
 
 tf_stopwords = vect.fit_transform(docs_tokens)
 
+# Log in to database
+
 conn = sqlite3.connect("database.db", detect_types=sqlite3.PARSE_DECLTYPES)
 cur = conn.cursor()
+
+# Store term indices
 
 stopwords_ids = pd.DataFrame(vect.get_feature_names(), columns=["word"])
 stopwords_ids["id"] = stopwords_ids.index
 stopwords_ids.set_index("word")
 stopwords_ids.to_sql("stopwords_id", conn, index=True)
 
-pd.DataFrame(vect.idf_, columns=["idf"]).to_sql("pos_trigrams_idf", conn, index=True)
-
+# Store vectors
 
 cur.execute("create table stopwords_tf (ID integer primary key, STOPWORDS array)")
 

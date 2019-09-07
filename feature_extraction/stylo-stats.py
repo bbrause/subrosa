@@ -1,8 +1,17 @@
+# SUB ROSA v0.1
+# 2019
+#
+# author:  Jan Luhmann
+# license: GNU General Public License v3.0
+
 import pickle
 import os
 import sqlite3
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import minmax_scale
+
+# Register adapter for storing numpy arrays in SQLite database
 
 def adapt_array(arr):
     return arr.tobytes()
@@ -13,14 +22,22 @@ def convert_array(text):
 sqlite3.register_adapter(np.array, adapt_array)    
 sqlite3.register_converter("array", convert_array)
 
+# Read metadata
+
 ids = pd.read_csv("imdb_sub_ids.tsv", sep="\t")
 ids = ids.drop(ids.columns[0], axis = 1)
+
+# Log in to database
 
 conn = sqlite3.connect("database.db", detect_types=sqlite3.PARSE_DECLTYPES)
 cur = conn.cursor()
 
+# Read Speechtempo and Sentiment vectors
+
 speechtempo_percent = pd.read_sql("select * from speechtempo_percent", conn, index_col="ID")
 sentiment_percent = pd.read_sql("select * from sentiment_percent", conn, index_col="ID")
+
+# Read docs of tokens, pos-tags and pure srts
 
 docs_tokens = []
 
@@ -37,6 +54,7 @@ srts_cleaned = []
 for file in os.listdir("pickles/srts_cleaned/"):
   srts_cleaned += pickle.load(open("pickles/srts_cleaned/" + file, "rb"))
 
+# Statistical calculations
 
 def calc_standardized_typetoken(tokens, n):
     tokens = [''.join([c for c in token if c.isalpha()]) for token in tokens]
@@ -90,6 +108,7 @@ def calc_sentence_lengths(pos_tags):
     long_sent_ratio = len([s for s in sentence_lengths if s > 7]) / len(sentence_lengths)
     return np.mean(sentence_lengths), short_sent_ratio, mid_sent_ratio, long_sent_ratio
 
+# Create dataframe
 
 stylometric_features = pd.DataFrame(0, index=ids["id"], columns=["sttr", "entropy", "mean_word_length", 
                                                                 "short_word_ratio", "mid_word_ratio", "long_word_ratio", 
@@ -108,6 +127,8 @@ stylometric_features["mean_word_length"] = [doc[0] for doc in word_data]
 stylometric_features["short_word_ratio"] = [doc[1] for doc in word_data]
 stylometric_features["mid_word_ratio"] = [doc[2] for doc in word_data]
 stylometric_features["long_word_ratio"] = [doc[3] for doc in word_data]
+
+# Determine silence stats from subtitle dataframes
 
 mean_silence_duration = []
 silence_ratio = []
@@ -131,20 +152,28 @@ for i,doc in enumerate(srts_cleaned):
 stylometric_features["mean_silence_duration"] = mean_silence_duration
 stylometric_features["silence_ratio"] = silence_ratio
 
+# Determine mean values of sentiment and speech tempo (first sorting is necessary because these vectors come from database
+# and are differently sorted than our metadata here)
+
 stylometric_features = stylometric_features.sort_values(by="id")
 
 stylometric_features["mean_sentiment"] = [np.mean(doc) for doc in sentiment_percent["SENTIMENT"]]
 stylometric_features["mean_words_per_second"] = [np.mean(doc) for doc in speechtempo_percent["SPEECHTEMPO"]]
 
+# Store to database
+
 stylometric_features.to_sql("stylometric_features", conn, index=True)
+
+# Minmax-scale each feature individually
 
 stylometric_features_scaled = stylometric_features
 
-from sklearn.preprocessing import minmax_scale
 for column in stylometric_features_scaled.columns:
   min_ = min(stylometric_features_scaled[column])
   max_ = max(stylometric_features_scaled[column])
   stylometric_features_scaled[column] = [(x - min_)/(max_ - min_) for x in stylometric_features_scaled[column]]
+
+# Determine mean value of l2-normalization factor among vectors
 
 sums = []
 for i, row in stylometric_features_scaled.iterrows():
@@ -154,9 +183,13 @@ for i, row in stylometric_features_scaled.iterrows():
   
 stylometric_features_norm_factor = np.mean(sums)
 
+# Normalize by this factor
+
 stylometric_features_scaled_normalized = stylometric_features_scaled
 for i, row in stylometric_features_scaled_normalized.iterrows():
   stylometric_features_scaled_normalized.loc[row.name] = [(x/stylometric_features_norm_factor) for x in row.values]
+
+# Store
 
 stylometric_features_scaled.to_sql("stylometric_features_sn", conn, index=True)
 
