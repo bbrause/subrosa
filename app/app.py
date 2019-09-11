@@ -4,21 +4,19 @@
 # author:  Jan Luhmann
 # license: GNU General Public License v3.0
 
-import numpy as np
 import webbrowser
-from werkzeug.serving import run_simple
 from threading import Timer
+import numpy as np
+from werkzeug.serving import run_simple
+from flask import Flask, request, jsonify, render_template
 
 from database import Database
-from film import Film
 from methods import *
-
-from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
 def jsonify_films():
-    # Attributes of instances of class "Film" contained in current_films are transferred to list "nodes"
+    # Attributes of "Film" instances in current_films are transferred to list "nodes"
     # and calculated distances between their feature vectors are transferred to list "links".
     # Distance values are normalized using zscores.
     # @return: JSON of dict containing "nodes" and "links"
@@ -29,22 +27,22 @@ def jsonify_films():
     links = []
     all_ids = [f.id for f in current_films]
     for film in current_films:
-        nodes.append({ "title": film.title,
+        nodes.append({"title": film.title,
                        "id": film.id,
                        "genre": film.main_genre,
                        "genres": film.genres,
                        "year": film.year,
-                       "num_votes": film.num_votes })
+                       "num_votes": film.num_votes})
         for linked_film_id, dist in film.distances.items():
-                if linked_film_id in all_ids:
-                    links.append({ "source": film.id,
-                            "target": linked_film_id,
-                            "distance": dist})
+            if linked_film_id in all_ids:
+                links.append({"source": film.id,
+                        "target": linked_film_id,
+                        "distance": dist})
 
     if len(links) > 0:
         distances = [l["distance"] for l in links]
         dist_mean = np.mean(distances)
-        dist_std = max(0.001,np.std(distances))
+        dist_std = max(0.001, np.std(distances))
         for i in range(len(links)):
             links[i]["distance"] = (max(-2.5, min(10, (links[i]["distance"] - dist_mean)/dist_std)) / 5) + 0.5
     return jsonify({"nodes": nodes, "links": links})
@@ -97,7 +95,7 @@ def add_film(film_id):
 
 @app.route('/add_similar_films/<film_id>/<number>/<weights>', methods=['POST'])
 def add_similar_films(film_id, number, weights):
-    # Processes the user request to add a number of similar films 
+    # Processes the user request to add a number of similar films
     # to a selected film by selected weights.
     # @return: updated graph data
 
@@ -147,19 +145,22 @@ def get_detail_data(film_id):
 
     if not hasattr(film, 'sttr'):
         film.set_detail_data(db)
-    
-    top_tokens = sorted([(word, score) for (i, word, score) in sorted(film.top_tokens, key=lambda x:x[2], reverse=True)[:200]], key=lambda x:x[0])
+
+    top_tokens = sorted([(word, score) for (i, word, score)
+                        in sorted(film.top_tokens, key=lambda x: x[2], reverse=True)[:200]], key=lambda x: x[0])
     score_mean = np.mean([score for (word, score) in top_tokens])
     film.tokens_score_mean = score_mean
     score_std = np.std([score for (word, score) in top_tokens])
     film.tokens_score_std = score_std
     top_tokens = [(word, (score - score_mean)/score_std) for (word, score) in top_tokens]
-    
-    top_postags = sorted([(term, round(score, 2)) for (i, term, score) in film.top_postags], key=lambda x:x[1], reverse=True)[:10]
-    top_stopwords = sorted([(term, round(score, 2)) for (i, term, score) in film.top_stopwords], key=lambda x:x[1], reverse=True)[:10]
+
+    top_postags = sorted([(term, round(score, 2)) for (i, term, score) 
+                        in film.top_postags], key=lambda x: x[1], reverse=True)[:10]
+    top_stopwords = sorted([(term, round(score, 2)) for (i, term, score) 
+                        in film.top_stopwords], key=lambda x: x[1], reverse=True)[:10]
 
     output = {
-        "top_tokens": top_tokens, 
+        "top_tokens": top_tokens,
         "top_postags": top_postags,
         "top_stopwords": top_stopwords,
         "stylometric_features": {
@@ -178,22 +179,22 @@ def get_detail_data(film_id):
             "mean_silence_duration": film.mean_silence_duration,
             "silence_ratio": film.silence_ratio
         },
-        "sentiment":    {"percent": { "1": list(film.sentiment_percent),
+        "sentiment":    {"percent": {"1": list(film.sentiment_percent),
                                     "2": list([np.mean(film.sentiment_percent[i:i+2]) for i in range(0, len(film.sentiment_percent), 2)]),
                                     "5": list([np.mean(film.sentiment_percent[i:i+5]) for i in range(0, len(film.sentiment_percent), 5)])
                         }, 
-                        "minute": { "1": list(film.sentiment_minute),
+                        "minute": {"1": list(film.sentiment_minute),
                                     "2": list([np.mean(film.sentiment_minute[i:i+2]) for i in range(0, len(film.sentiment_minute), 2)]),
                                     "5": list([np.mean(film.sentiment_minute[i:i+5]) for i in range(0, len(film.sentiment_minute), 5)])
                         }
         },
-        "speechtempo":  {"percent": { "1": list(film.speechtempo_percent),
-                                    "2": list([np.mean(film.speechtempo_percent[i:i+2]) for i in range(0, len(film.speechtempo_percent), 2)]),
-                                    "5": list([np.mean(film.speechtempo_percent[i:i+5]) for i in range(0, len(film.speechtempo_percent), 5)])
+        "speechtempo":  {"percent": {"1": list(film.speechtempo_percent),
+                                "2": list([np.mean(film.speechtempo_percent[i:i+2]) for i in range(0, len(film.speechtempo_percent), 2)]),
+                                "5": list([np.mean(film.speechtempo_percent[i:i+5]) for i in range(0, len(film.speechtempo_percent), 5)])
                         }, 
-                        "minute": { "1": list(film.speechtempo_minute),
-                                    "2": list([np.mean(film.speechtempo_minute[i:i+2]) for i in range(0, len(film.speechtempo_minute), 2)]),
-                                    "5": list([np.mean(film.speechtempo_minute[i:i+5]) for i in range(0, len(film.speechtempo_minute), 5)])
+                        "minute": {"1": list(film.speechtempo_minute),
+                                "2": list([np.mean(film.speechtempo_minute[i:i+2]) for i in range(0, len(film.speechtempo_minute), 2)]),
+                                "5": list([np.mean(film.speechtempo_minute[i:i+5]) for i in range(0, len(film.speechtempo_minute), 5)])
                         }
         }
     }
@@ -216,7 +217,7 @@ def get_compare_data(film_left_id, film_right_id):
         if film.id == int(film_left_id):
             film_left = film
             found += 1
-        elif film.id ==int(film_right_id):
+        elif film.id == int(film_right_id):
             film_right = film
             found += 1
     
@@ -232,7 +233,7 @@ def get_compare_data(film_left_id, film_right_id):
             token_right_score = film_right.top_tokens[token_right_index[0]][2]
             common_tokens.append((token[1], token[2] + token_right_score))
 
-    common_tokens = sorted([(word, score) for (word, score) in sorted(common_tokens, key=lambda x:x[1], reverse=True)[:200]], key=lambda x:x[0])
+    common_tokens = sorted([(word, score) for (word, score) in sorted(common_tokens, key=lambda x: x[1], reverse=True)[:200]], key=lambda x: x[0])
     score_mean = 0.9 * (film_left.tokens_score_mean + film_right.tokens_score_mean)
     score_std = 0.9 * (film_left.tokens_score_std + film_right.tokens_score_std)
     common_tokens = [(word, (score - score_mean)/score_std) for (word, score) in common_tokens]
@@ -257,7 +258,7 @@ def shutdown_server():
 if __name__ == '__main__':
     db = Database()
     current_films = []
-    weights = [1,1,1,1,1,1]
+    weights = [1, 1, 1, 1, 1, 1]
 
     Timer(1.25, lambda: webbrowser.open("http://0.0.0.0:8000")).start()
     run_simple('0.0.0.0', 8000, app)

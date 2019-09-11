@@ -189,6 +189,7 @@ for i, row in speechtempo_percent_smoothed_normalized.iterrows():
 
 sentiment_percent_smoothed_normalized = sentiment_percent_smoothed
 for i, row in sentiment_percent_smoothed_normalized.iterrows():
+  sentiment_percent_smoothed_normalized.loc[row.name]["SENTIMENT"] = [((x + 1)/2) for x in row["SENTIMENT"]] # Rescale to avoid negative values
   sentiment_percent_smoothed_normalized.loc[row.name]["SENTIMENT"] = [(x/sentiment_norm_factor) for x in row["SENTIMENT"]]
 
 # Store vectors

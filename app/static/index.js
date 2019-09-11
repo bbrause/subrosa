@@ -225,8 +225,10 @@ var color_genre = d3.scaleOrdinal()
             .range(["#006ddb", "#ffff6d", "#b6dbff", "#001111", "#b66dff", "#924900", "#db6d00", "#920000", "#24ff24", "#004949"]);
 
 var current_year = new Date().getFullYear();
-var color_year = d3.scaleSequential(d3.interpolateMagma)
-            .domain([1920, current_year + 2]);
+var expScale = d3.scalePow()
+    .exponent(2)
+    .domain([1920, current_year + 2]);
+var color_year = d3.scaleSequential(d3.interpolateMagma);
 
 function color(d) {
   var mode = $('select[id=colorselect]').val();
@@ -236,7 +238,7 @@ function color(d) {
   } else if (mode === "genre") {
     return color_genre(d.genre);
   } else if (mode === "year") {
-    return color_year(d.year);
+    return color_year(expScale(d.year));
   }
 };
 
