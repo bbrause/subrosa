@@ -225,10 +225,8 @@ var color_genre = d3.scaleOrdinal()
             .range(["#006ddb", "#ffff6d", "#b6dbff", "#001111", "#b66dff", "#924900", "#db6d00", "#920000", "#24ff24", "#004949"]);
 
 var current_year = new Date().getFullYear();
-var expScale = d3.scalePow()
-    .exponent(2)
-    .domain([1920, current_year + 2]);
-var color_year = d3.scaleSequential(d3.interpolateMagma);
+var color_year = d3.scaleSequential(d3.interpolatePlasma)
+  .domain([1900,current_year]);
 
 function color(d) {
   var mode = $('select[id=colorselect]').val();
@@ -238,9 +236,55 @@ function color(d) {
   } else if (mode === "genre") {
     return color_genre(d.genre);
   } else if (mode === "year") {
-    return color_year(expScale(d.year));
+    return color_year(d.year);
   }
 };
+
+function drawlegend() {
+  var mode = $('select[id=colorselect]').val();
+
+  if (mode === "genre") {
+    var legend = svg.selectAll(".legend")
+      .data(color_genre.domain())
+      .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + ((height - 170) + ((i + 1) * 15)) + ")"; });
+
+    legend.append("rect")
+      .attr("x", width - 10)
+      .attr("width", 10)
+      .attr("height", 10)
+      .attr("opacity", 0.66)
+      .style("fill", color_genre);
+
+    legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 6)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+  } else if (mode === "year") {
+  var legend = svg.selectAll(".legend")
+      .data([1900, 1920, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, current_year])
+      .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + ((height - 185) + ((i + 1) * 15)) + ")"; });
+
+    legend.append("rect")
+      .attr("x", width - 10)
+      .attr("width", 10)
+      .attr("height", 10)
+      .attr("opacity", 0.66)
+      .style("fill", color_year);
+
+    legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 6)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+  }
+}
 
 function clear() {
   d3.selectAll(".graph > svg > *").remove();
@@ -304,6 +348,8 @@ function drawgraph(data) {
       })
       .attr('x', 6)
       .attr('y', 3);
+
+  drawlegend();
 
   //Drag functions 
   //d is the node 
