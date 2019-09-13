@@ -65,7 +65,7 @@ function add_similar_films(film_id){
 
   if (film_id === ''){
     $( "#dialog" ).text(
-      "Please enter a valid IMDb ID!"
+      "Please select a film!"
     );
   } else {
     $( "#dialog" ).text( ""
@@ -170,7 +170,12 @@ $(document).ready(function(){
     var film_id = $('input[id=film_search_id]').val();
 
     if (film_id === ''){
-      $( "#dialog" ).dialog();
+      $( "#dialog" ).text(
+        "Please select a film!"
+      );
+    } else {
+      $( "#dialog" ).text( ""
+      );
     }
 
     $.ajax({url: "/add_film/" + film_id, 
