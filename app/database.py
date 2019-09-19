@@ -30,9 +30,11 @@ class Database:
 
     def unzip_db(self):
         print("Extracting database file... might take a moment... please wait.")
+        zip_path = os.path.join(package_directory, "database.dbz")"
         try:
-            with zipfile.ZipFile(os.path.join(package_directory, "database.dbz"),"r") as file:
+            with zipfile.ZipFile(zip_path,"r") as file:
                 file.extractall(package_directory)
+            os.remove(zip_path)
         except Exception as e:
             print(str(e))
 
