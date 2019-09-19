@@ -1,8 +1,10 @@
 import sqlite3
 import numpy as np
 import os
+import zipfile
 
 package_directory = os.path.dirname(os.path.abspath(__file__))
+database_path = os.path.join(package_directory, "database.db")
 
 class Database:
     
@@ -22,16 +24,28 @@ class Database:
         sqlite3.register_adapter(np.array, adapt_array)    
         sqlite3.register_converter("array", convert_array)
 
+        if not os.path.isfile(database_path):
+            self.unzip_db()
+
+
+    def unzip_db(self):
+        print("Extracting database file... might take a moment... please wait.")
+        try:
+            with zipfile.ZipFile(os.path.join(package_directory, "database.dbz"),"r") as file:
+                file.extractall(package_directory)
+        except Exception as e:
+            print(str(e))
+
 
     def get_db(self):
         # Try to connect to database
         # @return: connection, cursor (if successful)
         try:
-            conn = sqlite3.connect(os.path.join(package_directory, "database.db"), detect_types=sqlite3.PARSE_DECLTYPES)
+            conn = sqlite3.connect(database_path, detect_types=sqlite3.PARSE_DECLTYPES)
             cursor = conn.cursor()
             return conn, cursor
         except Exception as e:
-            print(e)
+            print(str(e))
 
 
     def get_search_data(self):
