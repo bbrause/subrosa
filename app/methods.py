@@ -66,7 +66,6 @@ def get_similar_films(db, main_film_id, weights=[1,1,1,1,1,1]):
     batch_size = 100
     offset = 0
     while True:
-        print('.', end='')
         vector_matrix = build_vector_matrix(db, batch_size, offset)
         if vector_matrix is None:
             break

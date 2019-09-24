@@ -105,8 +105,13 @@ class Film:
         top_tokens = [(i, x) for (i, x) in enumerate(tokens_vector) if x > 0]
         top_tokens_words = db.get_terms("lemmatizedtokens_id", top_tokens)
 
-        self.tokens_score_mean = None
-        self.tokens_score_std = None
+        top_200_tokens = sorted([(word, score) for (i, word, score)
+                        in sorted(top_tokens_words, key=lambda x: x[2], reverse=True)[:200]], key=lambda x: x[0])
+        score_mean = np.mean([score for (word, score) in top_200_tokens])
+        score_std = np.std([score for (word, score) in top_200_tokens])
+
+        self.tokens_score_mean = score_mean
+        self.tokens_score_std = score_std
 
         return top_tokens_words
 

@@ -15,14 +15,12 @@ from methods import *
 
 app = Flask(__name__)
 
-def jsonify_films():
+def jsonify_films(current_films):
     # Attributes of "Film" instances in current_films are transferred to list "nodes"
     # and calculated distances between their feature vectors are transferred to list "links".
     # Distance values are normalized using zscores.
-    # @return: JSON of dict containing "nodes" and "links"
+    # @return: JSON of dict containing "nodes", "links", and list of film ids.
 
-    global current_films
-    global weights
     nodes = []
     links = []
     all_ids = [f.id for f in current_films]
@@ -45,17 +43,23 @@ def jsonify_films():
         dist_std = max(0.001, np.std(distances))
         for i in range(len(links)):
             links[i]["distance"] = (max(-2.5, min(10, (links[i]["distance"] - dist_mean)/dist_std)) / 5) + 0.5
-    return jsonify({"nodes": nodes, "links": links})
+    return jsonify({"nodes": nodes, "links": links, "current_films": all_ids})
 
-def calculate_weights(weights_str):
-    # Converts String of weights to float values and normalizes these values by their max value.
+def calculate_weights(weights):
+    # Converts weight dict to list of float values and normalizes these values by their max value.
     # @return:  list of weights
 
-    weights = weights_str.split("_")
-    weights = [float(w) for w in weights]
+    weights_list = [weights["tokens"], weights["postags"], weights["stopwords"], weights["tempo"], weights["sentiment"], weights["stylometric"]]
+    weights = [float(w) for w in weights_list]
     max_ = max(weights)
     weights = [w/max_ for w in weights]
     return weights
+
+def get_current_films(current_film_list):
+    # Gets Film instance for each film ID in current_film_list
+    # @return:  list of Film instances
+
+    return [get_film(db, film_id) for film_id in current_film_list]
 
 @app.route('/')
 def start():
@@ -69,78 +73,97 @@ def get_search_data():
     results = db.get_search_data()
     return jsonify({"results": results})
 
-def append_to_current_films(films):
-    # Appends an instance of Film to current_films, prevents doubles.
+#def append_to_current_films(films):
+#    # Appends an instance of Film to current_films, prevents doubles.#
+#
+#    global current_films
+#    for film in films:
+#       if film.id not in [f.id for f in current_films]:
+#            current_films.append(film)
 
-    global current_films
-    for film in films:
-        if film.id not in [f.id for f in current_films]:
-            current_films.append(film)
-
-@app.route('/add_film/<film_id>', methods=['POST'])
-def add_film(film_id):
+@app.route('/add_film/', methods=['POST'])
+def add_film():
     # Processes the user request to add a new film to the canvas.
     # @return: updated graph data
 
-    global current_films
-    global weights
-    for film_ in current_films:
-        if film_.id == int(film_id):
+    new_film_id = request.json['film_id']
+    current_films = request.json['current_films']
+
+    for film_id in current_films:
+        if int(film_id) == int(new_film_id):
             return 'Exists'
-    film = get_film(db, film_id)
+
+    film = get_film(db, new_film_id)
     if film is None:
         return 'None'
-    append_to_current_films([film])
-    return update_weights(weights)
 
-@app.route('/add_similar_films/<film_id>/<number>/<weights>', methods=['POST'])
-def add_similar_films(film_id, number, weights):
+    current_films.append(int(new_film_id))
+    weights = request.json['weights']
+    return update_weights(current_films, weights)
+
+@app.route('/add_similar_films/', methods=['POST'])
+def add_similar_films():
     # Processes the user request to add a number of similar films
     # to a selected film by selected weights.
     # @return: updated graph data
 
-    global current_films
-    weights = calculate_weights(weights)
-    number = int(number)
-    result = get_similar_films(db, film_id, weights)
+    current_films = request.json['current_films']
+    weights_list = calculate_weights(request.json['weights'])
+    weights = request.json['weights']
+    number = int(request.json['number'])
+
+    film_id = request.json['film_id']
+
+    result = get_similar_films(db, film_id, weights_list)
     if result is None:
         return 'None'
     else:
         film, similar_films = result
     similar_films = similar_films[:number]
-    append_to_current_films([film] + similar_films)
-    return update_weights(weights)
 
-@app.route('/update_weights/<weights>', methods=['POST'])
-def update_weights(weights):
+    current_films.extend([film_id] + [f.id for f in similar_films])
+    current_films = list(set(current_films))
+
+    return update_weights(current_films, weights)
+
+
+@app.route('/update_weights/', methods=['POST'])
+def update_weights(current_films = None, weights = None):
     # Updates graph data based on given weights.
     # return: JSON of updated graph data
 
-    global current_films
-    if isinstance(weights, str):
+    if current_films is None:
+        current_films = get_current_films(request.json['current_films'])
+    else:
+        current_films = get_current_films(current_films)
+    if weights is None:
+        weights = calculate_weights(request.json['weights'])
+    else:
         weights = calculate_weights(weights)
+
     update_film_distances(current_films, weights)
-    return jsonify_films()
+    return jsonify_films(current_films)
 
-@app.route('/clear')
-def clear():
-    # Clears current_films
-    # @return: String
 
-    global current_films
-    current_films = []
-    return "success"
+# @app.route('/clear')
+# def clear():
+#    # Clears current_films
+#    # @return: String
+#
+#    global current_films
+#    current_films = []
+#    return "success"
 
-@app.route('/get_detail_data/<film_id>', methods=['POST'])
-def get_detail_data(film_id):
+@app.route('/get_detail_data/', methods=['POST'])
+def get_detail_data():
     # Processes the request to fetch detail data of a Film.
     # Calculates top terms of Bag-of-Words, POS Tag Trigrams and Stopwords models.
     # @return: JSON of detail data
 
-    global current_films
-    global weights
-    film = [f for f in current_films if int(f.id) == int(film_id)][0]
-    if film == None:
+    film_id = request.json['film_id']
+
+    film = get_film(db, film_id)
+    if film is None:
         return 'None'
 
     if not hasattr(film, 'sttr'):
@@ -201,28 +224,21 @@ def get_detail_data(film_id):
 
     return jsonify(output)
 
-@app.route('/get_compare_data/<film_left_id>/<film_right_id>', methods=['POST'])
-def get_compare_data(film_left_id, film_right_id):
+@app.route('/get_compare_data/', methods=['POST'])
+def get_compare_data():
     # Calculates intersection of terms of Bag-of-Words model.
     # @return: JSON of top terms.
 
-    film_left = None
-    film_right = None
+    film_left = get_film(db, request.json['film_left'])
+    film_right = get_film(db, request.json['film_right'])
 
-    found = 0
-
-    for film in current_films:
-        if found == 2:
-            break
-        if film.id == int(film_left_id):
-            film_left = film
-            found += 1
-        elif film.id == int(film_right_id):
-            film_right = film
-            found += 1
-    
-    if found < 2:
+    if film_left == None or film_right == None:
         return 'None'
+    
+    if not hasattr(film_left, 'sttr'):
+        film_left.set_detail_data(db)
+    if not hasattr(film_right, 'sttr'):
+        film_right.set_detail_data(db)
 
     common_tokens = []
     film_right_token_indices = [i for (i, word, score) in film_right.top_tokens]
@@ -244,21 +260,19 @@ def get_compare_data(film_left_id, film_right_id):
 
     return jsonify(output)
 
-@app.route('/shutdown', methods=['POST'])
-def shutdown():
-    shutdown_server()
-    return 'Server shutting down...'
+#@app.route('/shutdown', methods=['POST'])
+#def shutdown():
+#    shutdown_server()
+#    return 'Server shutting down...'
 
-def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
-    func()
+#def shutdown_server():
+#    func = request.environ.get('werkzeug.server.shutdown')
+#    if func is None:
+#        raise RuntimeError('Not running with the Werkzeug Server')
+#    func()
 
 if __name__ == '__main__':
     db = Database()
-    current_films = []
-    weights = [1, 1, 1, 1, 1, 1]
 
     Timer(1.25, lambda: webbrowser.open("http://0.0.0.0:8000")).start()
     run_simple('0.0.0.0', 8000, app)

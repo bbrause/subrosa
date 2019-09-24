@@ -41,6 +41,7 @@ h3 {
     display: none;
 		grid-area: comparebox;
     padding: 10px;
+    cursor: default;
 }
 
 .graph_speechtempo, .graph_sentiment {
@@ -57,6 +58,7 @@ h3 {
     right:10px;
     display: none;
     z-index: 2;
+    cursor: default;
 }
 
 .scrollbox {
@@ -85,6 +87,7 @@ h3 {
   padding: 0.25em;
   border: 1px;
   margin: 0.33em 0 0;
+  width: 10em;
 }
 
 .infobox button[id=add_similar_films_shortcut] {
@@ -107,6 +110,7 @@ h3 {
   height: 3em;
   background-image: linear-gradient(to right bottom, #f08080, #f28a8a, #f49393, #f59d9d, #f6a6a6);
   padding: 10px;
+  cursor: default;
 }
 
 .header #app_title {
@@ -123,24 +127,13 @@ h3 {
 .header #app_subtitle {
   position: absolute;
   top:48.5%;
-  left:19.5em;
+  right:0.66em;
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
-  text-align: left;
+  text-align: right;
   color: #fff;
   font-size: 90%;
   font-weight: normal;
-}
-
-.header #shutdown {
-  position: absolute;
-  top:48.5%;
-  right: 10px;
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
-  height: 3em;
-  width: 3em;
-  cursor: pointer;
 }
 
 #shutdown img {
@@ -151,7 +144,7 @@ h3 {
 .header #dialog {
   position: absolute;
   top:50%;
-  right: 12em;
+  right: 50%;
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
   text-align: left;
@@ -171,6 +164,7 @@ h3 {
   padding: 1em;
   font-size: 90%;
   padding: 10px;
+  cursor: default;
 }
 
 .sidebar hr {
@@ -198,6 +192,15 @@ h3 {
   background: transparent;
   border: 0;
   position: absolute;
+}
+
+.sidebar #disclaimer {
+  color: #888; 
+  font-size: 90%;
+}
+
+.sidebar #disclaimer a {
+  color: #888; 
 }
 
 .ui-autocomplete {
