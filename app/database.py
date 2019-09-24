@@ -216,7 +216,8 @@ class Database:
         # Gets all terms of given feature_set corresponding to token indices of given list "tokens" 
         # @return: list of tuples (token rank, term, token weight)
         conn, cursor = self.get_db()
-
+        
+        tokens = sorted(tokens, key=lambda x: x[0])
         token_indices = [i for (i, x) in tokens]
 
         cursor.execute("SELECT ID, WORD FROM " + feature_set + " WHERE ID IN " + str(tuple(token_indices)))
