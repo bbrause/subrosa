@@ -6,6 +6,7 @@ author:  Jan Luhmann
 license: GNU General Public License v3.0
 */
 
+var current_films = [];      // films currently displayed in graph
 var selected_film;      // currently selected film
 var compare_left_film;  // film selected for left part of detail view
 var compare_right_film; // film selected for right part of detail view
@@ -49,11 +50,18 @@ color_selector.addEventListener("change", update_graph);
 
 // Update distances by current weights and get graph data
 function update_graph(){
-  $.ajax({url: "update_weights/" + Object.values(weights).join("_"), 
+  $.ajax({url: "update_weights/", 
           type: 'POST',
+          data: JSON.stringify({
+            'current_films' : current_films,
+            'weights' : weights
+          }, null, '\t'),
+          contentType: 'application/json;charset=UTF-8',
           success:
     function(result){
-      var graph_data = result;
+      current_films = result.current_films;
+      var graph_data = { 'nodes' : result.nodes,
+                         'links' : result.links};
       drawgraph(graph_data);
     }});
 };
@@ -61,7 +69,6 @@ function update_graph(){
 // Get similar films of film with given ID and generate graph
 function add_similar_films(film_id){
   var number = $('select[id=numberselect]').val();
-  var app_url = "/add_similar_films/" + film_id + "/" + number + "/" + Object.values(weights).join("_");
 
   if (film_id === ''){
     $( "#dialog" ).text(
@@ -72,8 +79,15 @@ function add_similar_films(film_id){
     );
   }
 
-  $.ajax({url: app_url, 
+  $.ajax({url: "/add_similar_films/", 
           type: 'POST',
+          data: JSON.stringify({
+            'current_films' : current_films,
+            'weights' : weights,
+            'film_id' : film_id,
+            'number' : number
+          }, null, '\t'),
+          contentType: 'application/json;charset=UTF-8',
           beforeSend: function(){
             document.getElementById("add_similar_films").innerText = "loading...";
             document.getElementById("add_similar_films_shortcut").innerText = "loading...";
@@ -85,7 +99,9 @@ function add_similar_films(film_id){
           },
           success:
     function(result){
-      var graph_data = result;
+      current_films = result.current_films;
+      var graph_data = { 'nodes' : result.nodes,
+                         'links' : result.links};
       drawgraph(graph_data);
       for (f in graph_data.nodes){
         f = graph_data.nodes[f];
@@ -145,13 +161,13 @@ $(document).ready(function(){
   };
 
   // Various button requests
-  $("#shutdown").click(function() {
-    $.ajax({url: "/shutdown", 
-              type: 'POST',
-              success:
-              window.close()
-            });
-  });
+  // $("#shutdown").click(function() {
+  //  $.ajax({url: "/shutdown", 
+  //            type: 'POST',
+  //            success:
+  //            window.close()
+  //          });
+  //});
 
   $("button#compare_left").click(function() {
     display_compare("left", selected_film);
@@ -162,7 +178,7 @@ $(document).ready(function(){
   });
 
   $("button#clear").click(function() {
-    $.ajax({url: "/clear"});
+    //$.ajax({url: "/clear"});
     clear();
   });
 
@@ -178,14 +194,22 @@ $(document).ready(function(){
       );
     }
 
-    $.ajax({url: "/add_film/" + film_id, 
+    $.ajax({url: "/add_film/", 
             type: 'POST',
+            data: JSON.stringify({
+              'current_films' : current_films,
+              'weights' : weights,
+              'film_id': film_id
+            }, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
             success:
       function(result){
         if (result === 'None' || result === 'Exists'){
           console.log("None");
         } else {
-          var graph_data = result;
+          current_films = result.current_films;
+          var graph_data = { 'nodes' : result.nodes,
+                             'links' : result.links};
           drawgraph(graph_data);
           for (f in graph_data.nodes){
             f = graph_data.nodes[f];
@@ -226,8 +250,8 @@ width = +svg.attr("width"),
 height = +svg.attr("height");
 
 var color_genre = d3.scaleOrdinal()
-            .domain(["Sci-Fi", "Comedy", "Crime", "Horror", "Fantasy", "Western", "Action", "Drama", "Adventure", "Thriller"])
-            .range(["#006ddb", "#ffff6d", "#b6dbff", "#001111", "#b66dff", "#924900", "#db6d00", "#920000", "#24ff24", "#004949"]);
+            .domain(["Drama", "Comedy", "Adventure", "Crime", "Thriller", "Horror", "Sci-Fi", "Fantasy", "Western", "Action", ])
+            .range(["#a60018", "#ffff6d", "#24ff24", "#b6dbff", "#005555", "#001111", "#006ddb", "#b66dff", "#a65300", "#db6d00"]);
 
 var current_year = new Date().getFullYear();
 var color_year = d3.scaleSequential(d3.interpolatePlasma)
@@ -259,8 +283,9 @@ function drawlegend() {
       .attr("x", width - 10)
       .attr("width", 10)
       .attr("height", 10)
-      .attr("opacity", 0.66)
-      .style("fill", color_genre);
+      .style("fill", color_genre)
+      .attr("stroke-width", "1px")
+      .style("stroke", "#888");
 
     legend.append("text")
       .attr("x", width - 24)
@@ -279,8 +304,9 @@ function drawlegend() {
       .attr("x", width - 10)
       .attr("width", 10)
       .attr("height", 10)
-      .attr("opacity", 0.66)
-      .style("fill", color_year);
+      .style("fill", color_year)
+      .attr("stroke-width", "1px")
+      .style("stroke", "#888");
 
     legend.append("text")
       .attr("x", width - 24)
@@ -295,6 +321,7 @@ function clear() {
   d3.selectAll(".graph > svg > *").remove();
   document.getElementsByClassName("infobox")[0].style.display = 'none';
   document.getElementsByClassName("comparebox")[0].style.display = 'none';
+  current_films = [];
 }
 
 // Draw new graph
@@ -345,14 +372,15 @@ function drawgraph(data) {
   var circles = node.append("circle")
       .attr("r", 5)
       .attr("fill", function(d) { return color(d); })
-      
+      .attr("stroke-width", "1px")
+      .style("stroke", "#888");
 
   var labels = node.append("text")
       .text(function(d) {
         return d.title + " (" + d.year + ")";
       })
-      .attr('x', 6)
-      .attr('y', 3);
+      .attr('x', 8)
+      .attr('y', 4);
 
   drawlegend();
 
@@ -944,8 +972,12 @@ function display_compare(side, film) {
   document.getElementById(side + "_imdb_link").setAttribute('href', url);
   document.getElementById(side + "_imdb_link").innerText = 'on IMDb';
 
-  $.ajax({url: "/get_detail_data/" + film.id, 
+  $.ajax({url: "/get_detail_data/", 
     type: 'POST',
+    data: JSON.stringify({
+      'film_id' : film.id
+    }, null, '\t'),
+    contentType: 'application/json;charset=UTF-8',
     success:
       function(result){
         if (result === 'None') {
@@ -984,8 +1016,13 @@ function display_compare(side, film) {
 
 // Display comparison data of Bag-of-Words model detail
 function display_comparison(film_left, film_right) {
-  $.ajax({url: "/get_compare_data/" + film_left.id + "/" + film_right.id, 
+  $.ajax({url: "/get_compare_data/", 
     type: 'POST',
+    data: JSON.stringify({
+      'film_left' : film_left.id,
+      'film_right' : film_right.id
+    }, null, '\t'),
+    contentType: 'application/json;charset=UTF-8',
     success:
     function(result){
       if (result === 'None') {
