@@ -347,16 +347,22 @@ span#film_genres, span#left_film_genres, span#right_film_genres {
   margin: 0 0 0.66em 0;
 }
 
-#tokens-cloud-left {
+#tokens-cloud-left-wrapper {
   text-align: left;
 }
 
-#tokens-cloud-right {
+#tokens-cloud-right-wrapper {
   text-align: right;
 }
 
-#tokens-cloud-compare {
+#tokens-cloud-compare-wrapper {
   text-align: center;
+}
+
+.tokens-cloud-header {
+  margin: 0em 0em 1em 0em;
+  font-weight: bold;
+  display: none;
 }
 
 #tokens-wrapper {

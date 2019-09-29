@@ -204,8 +204,14 @@ $(document).ready(function(){
             contentType: 'application/json;charset=UTF-8',
             success:
       function(result){
-        if (result === 'None' || result === 'Exists'){
-          console.log("None");
+        if (result === 'None'){
+          $( "#dialog" ).text(
+            "Something went wrong. Film could not be found in database."
+          );
+        } else if (result === 'Exists'){
+          $( "#dialog" ).text(
+            "Film is already in graph."
+          );
         } else {
           current_films = result.current_films;
           var graph_data = { 'nodes' : result.nodes,
@@ -424,6 +430,7 @@ function drawgraph(data) {
             .attr("x", 6 / transform.k)
             .attr("y", 3 / transform.k);
       circles.attr("r", 5 / transform.k);
+      circles.attr("stroke-width", 1 / transform.k + "px")
       link.attr("stroke-width", 2 / transform.k);
   }
   
@@ -561,10 +568,10 @@ function generate_stylometric_table(){
   }
   
   feature_list = [
-    ["entropy", "sttr", "mean_sentiment"],
+    ["entropy", "sttr"],
     ["mean_sentence_length", "short_sentence_ratio", "mid_sentence_ratio", "long_sentence_ratio"],
     ["mean_word_length", "short_word_ratio", "mid_word_ratio", "long_word_ratio"],
-    ["mean_words_per_second", "mean_silence_duration", "silence_ratio"],
+    ["mean_words_per_second", "mean_silence_duration", "silence_ratio", "mean_sentiment"],
   ]
 
   var first_row = [true, true];
@@ -621,7 +628,8 @@ function generate_stylometric_table(){
       tcell.style.fontWeight = "bold";
       tcell.style.color = "darkred";
       if (first_row[0]) {
-        tcell.innerText = compare_left_film.title;
+        tcell.innerText = compare_left_film.title + " (" + compare_left_film.year + ")";
+        tcell.style.width = "20em";
         first_row[0] = false;
       } else {
         tcell.innerText = "";
@@ -653,7 +661,8 @@ function generate_stylometric_table(){
       tcell.style.color = "blue";
       tcell.style.fontWeight = 'bold';
       if (first_row[1]) {
-        tcell.innerText = compare_right_film.title;
+        tcell.innerText = compare_right_film.title + " (" + compare_right_film.year + ")";
+        tcell.style.width = "20em";
         first_row[1] = false;
       } else {
         tcell.innerText = "";
@@ -685,13 +694,16 @@ function create_speechtempo_graph() {
   var cent_min = $('select[id=speechtempo_scale]').val();
   var window_size = $('select[id=speechtempo_window]').val();
 
+  var graphbox = d3.select('.graphbox').node();
+  width = graphbox.getBoundingClientRect().width - 20;
+
   var svg_line = d3.select(".graph_speechtempo").append("svg")
       .attr('width', '100%')
       .attr('height', '250px')
       .attr('display', 'inline-block');
 
   var margin = {top: 10, right: 10, bottom: 40, left: 40},
-    width = 450 - margin.left - margin.right,
+    width = width - margin.left - margin.right,
     height = 250 - margin.top - margin.bottom;
 
   var y_data_left = [];
@@ -744,8 +756,14 @@ function create_speechtempo_graph() {
       .style("stroke", "darkred")
       .style("stroke-width", 1);
 
+    if (compare_left_film.title.length > 24){
+      title_short = compare_left_film.title.substring(0, 24) + "..." + " (" + compare_left_film.year + ")";
+    } else {
+      title_short = compare_left_film.title  + " (" + compare_left_film.year + ")";
+    }
+
     svg_line.append("circle").attr("cx",width + margin.right + margin.left + 20).attr("cy",height / 2).attr("r", 5).style("fill", "darkred");
-    svg_line.append("text").attr("x", width + margin.right + margin.left + 30).attr("y", height / 2).text(compare_left_film.title).style("font-size", "90%").attr("alignment-baseline","middle");
+    svg_line.append("text").attr("x", width + margin.right + margin.left + 30).attr("y", height / 2).text(title_short).style("font-size", "90%").attr("alignment-baseline","middle");
   }
 
   if (y_data_right.length > 0){
@@ -761,8 +779,14 @@ function create_speechtempo_graph() {
       .style("stroke", "blue")
       .style("stroke-width", 1);
 
+    if (compare_right_film.title.length > 24){
+      title_short = compare_right_film.title.substring(0, 24) + "..." + " (" + compare_right_film.year + ")";
+    } else {
+      title_short = compare_right_film.title  + " (" + compare_right_film.year + ")";
+    }
+
     svg_line.append("circle").attr("cx",width + margin.right + margin.left + 20).attr("cy",(height / 2) + 30).attr("r", 5).style("fill", "blue");
-    svg_line.append("text").attr("x", width + margin.right + margin.left + 30).attr("y", (height / 2) + 30).text(compare_right_film.title).style("font-size", "90%").attr("alignment-baseline","middle");
+    svg_line.append("text").attr("x", width + margin.right + margin.left + 30).attr("y", (height / 2) + 30).text(title_short).style("font-size", "90%").attr("alignment-baseline","middle");
   }
 
   var yAxis = d3.axisLeft()
@@ -814,29 +838,31 @@ function create_sentiment_graph(cent_min, window_size) {
   var cent_min = $('select[id=sentiment_scale]').val();
   var window_size = $('select[id=sentiment_window]').val();
 
+  var graphbox = d3.select('.graphbox').node();
+  width = graphbox.getBoundingClientRect().width - 20;
+
   var svg_line = d3.select(".graph_sentiment").append("svg")
       .attr('width', '100%')
       .attr('height', '250px')
       .attr('display', 'inline-block');
 
   var margin = {top: 10, right: 10, bottom: 40, left: 40},
-    width = 450 - margin.left - margin.right,
+    width = width - margin.left - margin.right,
     height = 250 - margin.top - margin.bottom;
 
   var y_data_left = [];
   var y_data_right = [];
-  var extent_min = [-0.5];
-  var extent_max = [0.5];
+  var extent = [0.5];
 
   if (typeof compare_left_film !== "undefined") {
     y_data_left = compare_left_film.sentiment[cent_min][window_size];
-    extent_min.push(d3.min(y_data_left));
-    extent_max.push(d3.max(y_data_left));
+    extent.push(Math.abs(d3.min(y_data_left)));
+    extent.push(Math.abs(d3.max(y_data_left)));
   }
   if (typeof compare_right_film !== "undefined") {
     y_data_right = compare_right_film.sentiment[cent_min][window_size];
-    extent_min.push(d3.min(y_data_right));
-    extent_max.push(d3.max(y_data_right));
+    extent.push(Math.abs(d3.min(y_data_right)));
+    extent.push(Math.abs(d3.max(y_data_right)));
   }
 
   var x_data = d3.range(0, window_size * Math.max(y_data_left.length, y_data_right.length), window_size);
@@ -846,7 +872,7 @@ function create_sentiment_graph(cent_min, window_size) {
     .range([margin.left, width + margin.left]);
 
   var yscl = d3.scaleLinear()
-    .domain([d3.min(extent_min), d3.max(extent_max)])
+    .domain([-1*d3.max(extent), d3.max(extent)])
     .range([height + margin.top, margin.top]);
 
   var myline = d3.line()
@@ -876,8 +902,14 @@ function create_sentiment_graph(cent_min, window_size) {
       .style("stroke", "darkred")
       .style("stroke-width", 1);
 
+    if (compare_left_film.title.length > 24){
+      title_short = compare_left_film.title.substring(0, 24) + "..." + " (" + compare_left_film.year + ")";
+    } else {
+      title_short = compare_left_film.title  + " (" + compare_left_film.year + ")";
+    }
+
     svg_line.append("circle").attr("cx",width + margin.right + margin.left + 20).attr("cy",height / 2).attr("r", 5).style("fill", "darkred");
-    svg_line.append("text").attr("x", width + margin.right + margin.left + 30).attr("y", height / 2).text(compare_left_film.title).style("font-size", "90%").attr("alignment-baseline","middle");
+    svg_line.append("text").attr("x", width + margin.right + margin.left + 30).attr("y", height / 2).text(title_short).style("font-size", "90%").attr("alignment-baseline","middle");
   }
 
   if (y_data_right.length > 0){
@@ -893,8 +925,14 @@ function create_sentiment_graph(cent_min, window_size) {
       .style("stroke", "blue")
       .style("stroke-width", 1);
 
+    if (compare_right_film.title.length > 24){
+      title_short = compare_right_film.title.substring(0, 24) + "..." + " (" + compare_right_film.year + ")";
+    } else {
+      title_short = compare_right_film.title  + " (" + compare_right_film.year + ")";
+    }
+
     svg_line.append("circle").attr("cx",width + margin.right + margin.left + 20).attr("cy",(height / 2) + 30).attr("r", 5).style("fill", "blue");
-    svg_line.append("text").attr("x", width + margin.right + margin.left + 30).attr("y", (height / 2) + 30).text(compare_right_film.title).style("font-size", "90%").attr("alignment-baseline","middle");
+    svg_line.append("text").attr("x", width + margin.right + margin.left + 30).attr("y", (height / 2) + 30).text(title_short).style("font-size", "90%").attr("alignment-baseline","middle");
   }
 
   var yAxis = d3.axisLeft()
@@ -994,6 +1032,8 @@ function display_compare(side, film) {
             compare_right_film.stylometric_features = film_data["stylometric_features"];
           }
 
+          document.getElementById("tokens-cloud-" + side + "-header").style.display = 'inline-block';
+
           cloud = document.getElementById("tokens-cloud-" + side);
           generate_token_cloud(cloud, film_data["top_tokens"]);
 
@@ -1028,6 +1068,7 @@ function display_comparison(film_left, film_right) {
       if (result === 'None') {
       } else {
         compare_data = result;
+        document.getElementById("tokens-cloud-compare-header").style.display = 'inline-block';
         cloud = document.getElementById("tokens-cloud-compare");
         generate_token_cloud(cloud, compare_data["tokens"]);
       }

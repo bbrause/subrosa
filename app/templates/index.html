@@ -106,43 +106,48 @@
   <div class="box comparebox">
       <div id="comparebox-header">
       <div id="metadata-left">
-          <span id="left_film_title"></span>
-          <span id="left_film_year"></span><br>
-          <span id="left_film_genres"></span><br>
+          <span id="left_film_title" class="left_film"></span>
+          <span id="left_film_year" class="left_film"></span><br>
+          <span id="left_film_genres" class="left_film"></span><br>
           <a id="left_imdb_link" target="_blank"></a><br>
       </div>
       <div id="metadata-right">
-          <span id="right_film_title"></span>
-          <span id="right_film_year"></span><br>
-          <span id="right_film_genres"></span><br>
+          <span id="right_film_title" class="right_film"></span>
+          <span id="right_film_year" class="right_film"></span><br>
+          <span id="right_film_genres" class="right_film"></span><br>
           <a id="right_imdb_link" target="_blank"></a><br>
       </div>
     </div>
     <div id="comparebox-wrapper">
       <div id="tokens">
-        <h3>Tokens</h3>
+        <h3>Bag-of-Words</h3>
         <div id="tokens-wrapper">
-          <div id="tokens-cloud-left">
-          </div>
+          <div id="tokens-cloud-left-wrapper" class="tokens-cloud-wrapper">
+          <div id="tokens-cloud-left-header" class="left_film tokens-cloud-header">TOP 200 TOKENS</div>
+          <div id="tokens-cloud-left" class="left_film">
+          </div></div>
+          <div id="tokens-cloud-compare-wrapper" class="tokens-cloud-wrapper">
+          <div id="tokens-cloud-compare-header" class="tokens-cloud-header">TOP 200 TOKENS OF INTERSECTION</div>
           <div id="tokens-cloud-compare">
-          </div>
-          <div id="tokens-cloud-right">
+          </div></div>
+          <div id="tokens-cloud-right-wrapper" class="tokens-cloud-wrapper">
+          <div id="tokens-cloud-right-header" class="right_film tokens-cloud-header">TOP 200 TOKENS</div>
+          <div id="tokens-cloud-right" class="right_film">
+          </div></div>
+      </div>
+      </div>
+      <div id="postags">
+        <h3>Syntax</h3>
+          <div id="graph_postags"></div>
+      </div>
+      <div id="stopwords">
+        <h3>Stop Words</h3>
+          <div id="graph_stopwords"></div>
+      </div>
+      <div id="stylometric">
+        <h3>Stylometric Features</h3><div>
+          <div id="stylometric_table"></div>
         </div>
-      </div>
-      </div>
-      <div id="speechtempo">
-          <h3>Speech Tempo</h3><div>
-              <select id="speechtempo_scale">
-                  <option value="percent">relative (percent)</option>
-                  <option value="minute">absolute (minutes)</option>
-              </select>
-              <select id="speechtempo_window">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="5">5</option>
-              </select>
-            <div class="graph_speechtempo"></div>
-          </div>
       </div>
       <div id="sentiment">
           <h3>Sentiment</h3><div>
@@ -158,25 +163,20 @@
             <div class="graph_sentiment"></div>
             </div>
       </div>
-      <div id="stylometric">
-          <h3>Stylometric Features</h3><div>
-            <div id="stylometric_table"></div>
+      <div id="speechtempo">
+          <h3>Speech Tempo</h3><div>
+              <select id="speechtempo_scale">
+                  <option value="percent">relative (percent)</option>
+                  <option value="minute">absolute (minutes)</option>
+              </select>
+              <select id="speechtempo_window">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="5">5</option>
+              </select>
+            <div class="graph_speechtempo"></div>
           </div>
       </div>
-      <div id="postags">
-          <h3>Syntax</h3><div id="postags-wrapper">
-            <div id="postags_table_left"></div>
-            <div></div>
-            <div id="postags_table_right"></div>
-          </div>
-        </div>
-        <div id="stopwords">
-          <h3>Stopwords</h3><div id="stopwords-wrapper">
-              <div id="stopwords_table_left"></div>
-              <div></div>
-              <div id="stopwords_table_right"></div>
-            </div>
-        </div>
     </div>
   </div>
   </div>
