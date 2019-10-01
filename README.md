@@ -18,16 +18,15 @@ Subtitle data was kindly provided by the team of <a href="http://www.opensubtitl
   
 ### Installation
 
-1. Please install Git LFS ([GitHub Large File Storage](https://git-lfs.github.com/)).
-2. Make sure you have Python 3 installed. Also install dependencies using `pip`:
+1. Make sure you have Python 3 installed. Also install dependencies using `pip`:
 ```
 pip install Flask numpy scikit-learn 
 ```
-3. Clone this repository.
+2. Clone this repository.
 ```
 git clone https://github.com/bbrause/subrosa.git
 ```
-4. Move to the repository folder and start the app.
+3. Move to the repository folder and start the app.
 ```
 cd subrosa
 python3 app/app.py
