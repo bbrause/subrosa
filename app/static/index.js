@@ -97,8 +97,8 @@ color_selector.addEventListener("change", update_graph);
 
 // Shorten film title plus year.
 function title_short(d) {
-  if (d.title.length > 24){
-    return d.title.substring(0, 24) + "..." + " (" + display_compare.year + ")"
+  if (d.title.length > 20){
+    return d.title.substring(0, 20) + "..." + " (" + d.year + ")"
   } else {
     return d.title  + " (" + d.year + ")"
   }
@@ -128,7 +128,7 @@ function add_similar_films(film_id){
 
   if (film_id === ''){
     $( "#dialog" ).text(
-      "Please select a film!"
+      "Please select a film in the graph!"
     );
   } else {
     $( "#dialog" ).text( ""
@@ -145,12 +145,10 @@ function add_similar_films(film_id){
           }, null, '\t'),
           contentType: 'application/json;charset=UTF-8',
           beforeSend: function(){
-            document.getElementById("add_similar_films").innerText = "loading...";
-            document.getElementById("add_similar_films_shortcut").innerText = "loading...";
+            document.getElementById("add_similar_films").innerHTML = "loading...";
           },
           complete: function(){
-            document.getElementById("add_similar_films").innerText = "Add Similar Films";
-            document.getElementById("add_similar_films_shortcut").innerText = "Add Similar Films";
+            document.getElementById("add_similar_films").innerHTML = "Add Similar Films<br>for Selected Film&#185;";
             document.getElementById('film_search').value = '';
           },
           success:
@@ -243,7 +241,7 @@ $(document).ready(function(){
 
     if (film_id === ''){
       $( "#dialog" ).text(
-        "Please select a film!"
+        "Please search for a film title!"
       );
     } else {
       $( "#dialog" ).text( ""
@@ -287,7 +285,7 @@ $(document).ready(function(){
 
   $("button#add_similar_films").click(function(){
     var film_id = $('input[id=film_search_id]').val();
-    add_similar_films(film_id);
+    add_similar_films(selected_film.id);
   });
 
   $("button#add_similar_films_shortcut").click(function(){
@@ -1433,24 +1431,32 @@ function display_compare(side, film) {
   var comparison = false;
 
   if (side === "left") {
-    compare_left_film = film;
-
     if (typeof compare_right_film !== "undefined") {
       if (compare_right_film.id === film.id) {
+        $( "#dialog" ).text(
+          "Selected film is already displayed on the right side of Compare View."
+        );
         return;
       } else {
+        compare_left_film = film;
         comparison = true;
       }
-    }
+    } else {
+        compare_left_film = film;
+      }
   } else if (side === "right") {
-    compare_right_film = film;
-
     if (typeof compare_left_film !== "undefined") {
       if (compare_left_film.id === film.id) {
+        $( "#dialog" ).text(
+          "Selected film is already displayed on the left side of Compare View."
+        );
         return;
       } else {
+        compare_right_film = film;    
         comparison = true;
       }
+    } else {
+      compare_right_film = film; 
     }
   }
 

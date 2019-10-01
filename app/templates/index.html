@@ -37,14 +37,6 @@
     <input type="text" id="film_search_id">
     <input type="text" id="film_search" placeholder="Search...">
     <button id="add_film">Add Film</button>
-    <button id="add_similar_films">Add Similar Films</button>
-    <select id="numberselect">
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="15">15</option>
-        <option value="20">20</option>
-        <option value="25">25</option>
-    </select>
   <br><br>
     <h1>Weights of Feature Models</h1>
       <div class="slidecontainer">
@@ -78,9 +70,20 @@
             <option value="year">release date</option></select><br><br>
         <!--node size by popularity <input type="checkbox"></input>-->
         </div>
-    <button id="update">Update Graph</button>
+    <button id="add_similar_films">Add Similar Films<br>for Selected Film&#185;</button>
+    <div class="numberselect_container">How many?
+    <select id="numberselect">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+        </select>
+    </div>
+    <button id="update">Update Distances of Current Graph&#185;</button>
     <button id="clear">Clear Graph</button>
-    <br><br><hr><span id="disclaimer"><!--For detailed information about each feature model, 
+    <br><br>
+    <span class="infotext">&#185;based on selected weights</span><hr><span class="infotext"><!--For detailed information about each feature model, 
       please read our <a href="https://github.com/bbrause/subrosa/blob/master/Luhmann_2019_MovieSimilarities.pdf">paper</a>.
       <hr>-->SUB ROSA is licensed under the <br><a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License v3.0</a>.
       <br>Author: <a href="https://github.com/bbrause/">Jan Luhmann</a></span>
@@ -94,9 +97,9 @@
           <span id="film_year"></span><br>
           <span id="film_genres"></span><br>
           <a id="imdb_link" target="_blank"></a><br>
-          <button id="add_similar_films_shortcut">Add Similar Films</button><br>
-          <button id="compare_left">Compare Left</button><br>
-          <button id="compare_right">Compare Right</button><br>
+          <!--<button id="add_similar_films_shortcut">Add Similar Films</button><br>-->
+          <button id="compare_left">Compare View: Left</button><br>
+          <button id="compare_right">Compare View: Right</button><br>
           <!--<button id="remove_film">Remove Film</button>-->
         </div>
         </div>

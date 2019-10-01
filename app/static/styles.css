@@ -87,7 +87,7 @@ h3 {
   padding: 0.25em;
   border: 1px;
   margin: 0.33em 0 0;
-  width: 10em;
+  width: 12em;
 }
 
 .infobox button[id=add_similar_films_shortcut] {
@@ -144,7 +144,8 @@ h3 {
 .header #dialog {
   position: absolute;
   top:50%;
-  right: 50%;
+  right: 20%;
+  width: 40%;
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
   text-align: left;
@@ -194,12 +195,12 @@ h3 {
   position: absolute;
 }
 
-.sidebar #disclaimer {
+.sidebar .infotext {
   color: #888; 
   font-size: 90%;
 }
 
-.sidebar #disclaimer a {
+.sidebar .infotext a {
   color: #888; 
 }
 
@@ -213,6 +214,10 @@ h3 {
   margin-bottom: 10px;
   cursor: default;
   list-style: none;
+}
+
+.ui-autocomplete li {
+  height: 1.33em;
 }
 
 .ui-autocomplete li:hover {
@@ -229,41 +234,54 @@ button[id=add_film] {
   border: none;
   margin: 0.33em 0 0;
   font-size:100%;
-  height: 3em;
-  width: 4.25em;
+  height: 2em;
+  width: 100%;
   vertical-align: top;
 }
 
 button[id=add_similar_films] {
-  padding: 0.25em;
   border: none;
   margin: 0.33em 0 0;
-  font-size:100%;
-  height: 3em;
-  width: 7.1em;
+  font-size: 90%;
+  height: 3.33em;
+  width: 66%;
   vertical-align: top;
 }
 
 select[id=numberselect] {
   padding: 0.25em;
   border: 0;
-  margin: 0.33em 0 0;
-  font-size: 90%;
+  margin: 0.11em 0 0;
+  font-size: 100%;
   height: 2em;
-  width: 4.25em;
+  width: 100%;
   border-radius: 0;
   background-color: white;
 }
 
+.numberselect_container {
+  padding: 0;
+  width: 32%; 
+  height: 3em;
+  margin: 0.33em 0 0;
+  font-size: 90%;
+  float: right; 
+  text-align: right;
+}
+
 button[id=update] {
+  padding: 0.25em;
   width: 100%;
+  font-size: 90%;
   border: none;
   height: 2em;
   margin: 1em 0 0.33em 0;
 }
 
 button[id=clear] {
+  padding: 0.25em;
   width: 100%;
+  font-size: 90%;
   border: none;
   height: 2em;
   margin: 0.33em 0;
