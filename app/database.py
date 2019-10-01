@@ -27,6 +27,9 @@ class Database:
         if not os.path.isfile(database_path):
             self.unzip_db()
 
+        self.average_postags_vector = np.mean([vec for (id, vec) in self.get_vectors_batch("pos_trigrams_vectors", batch_size=10000)], axis=0)
+        self.average_stopwords_vector = np.mean([vec for (id, vec) in self.get_vectors_batch("stopwords_vectors", batch_size=10000)], axis=0)
+
 
     def unzip_db(self):
         print("Extracting database file... might take a moment... please wait.")

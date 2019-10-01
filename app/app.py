@@ -177,10 +177,8 @@ def get_detail_data():
     film.tokens_score_std = score_std
     top_tokens = [(word, (score - score_mean)/score_std) for (word, score) in top_tokens]
 
-    top_postags = sorted([(term, round(score, 2)) for (i, term, score) 
-                        in film.top_postags], key=lambda x: x[1], reverse=True)[:10]
-    top_stopwords = sorted([(term, round(score, 2)) for (i, term, score) 
-                        in film.top_stopwords], key=lambda x: x[1], reverse=True)[:10]
+    top_postags = [{"term": term, "score": round(scores[0], 5), "score_diff": round(scores[1], 5)} for (i, term, scores) in film.top_postags]
+    top_stopwords = [{"term": term, "score": round(scores[0], 5), "score_diff": round(scores[1], 5)} for (i, term, scores) in film.top_stopwords]
 
     output = {
         "top_tokens": top_tokens,

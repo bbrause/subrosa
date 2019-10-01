@@ -137,12 +137,25 @@
       </div>
       </div>
       <div id="postags">
-        <h3>Syntax</h3>
+        <h3>Syntax</h3><div>
+          <select id="postags_filter">
+              <option value="">filter by tag (none selected)</option>
+          </select>
+          <select id="postags_mode">
+              <option value="1">tf-idf scores</option>
+              <option value="2">differences to global average tf-idf scores</option>
+          </select>
           <div id="graph_postags"></div>
+        </div>
       </div>
       <div id="stopwords">
-        <h3>Stop Words</h3>
+        <h3>Stop Words</h3><div>
+            <select id="stopwords_mode">
+                <option value="1">tf scores</option>
+                <option value="2">differences to global average tf scores</option>
+            </select>
           <div id="graph_stopwords"></div>
+        </div>        
       </div>
       <div id="stylometric">
         <h3>Stylometric Features</h3><div>

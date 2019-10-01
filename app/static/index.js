@@ -21,6 +21,43 @@ var weights = {
   "stylometric" : 100
 };
 
+var postags = [{"symbol": "#", "info": "sentence beginning/end"},
+  {"symbol": "CC", "info": "coordinating conjunctions"},
+  {"symbol": "CD", "info": "cardinal number"},
+  {"symbol": "DT", "info": "determiner"},
+  {"symbol": "EX", "info": "existential 'there'"},
+  {"symbol": "IN", "info": "preprosition"},
+  {"symbol": "JJ", "info": "adjective"},
+  {"symbol": "MD", "info": "modal"},
+  {"symbol": "NN", "info": "noun, singular"},
+  {"symbol": "NNP", "info": "proper noun, singular"},
+  {"symbol": "NNPS", "info": "proper noun, plural"},
+  {"symbol": "NNS", "info": "noun, plural"},
+  {"symbol": "PDT", "info": "predeterminer"},
+  {"symbol": "POS", "info": "possessive ending"},
+  {"symbol": "PRP", "info": "personal pronoun"},
+  {"symbol": "PRP$", "info": "possessive pronoun"},
+  {"symbol": "RB", "info": "adverb"},
+  {"symbol": "RP", "info": "particle"},
+  {"symbol": "TO", "info": "'to'"},
+  {"symbol": "UH", "info": "interjection"},
+  {"symbol": "VB", "info": "verb, base form"},
+  {"symbol": "VBD", "info": "verb, past tense"},
+  {"symbol": "VBG", "info": "verb, gerund"},
+  {"symbol": "VBN", "info": "verb, past particle"},
+  {"symbol": "VBP", "info": "verb, non-3rd sg. present"},
+  {"symbol": "VBZ", "info": "verb, 3rd sg. present"},
+  {"symbol": "WP", "info": "wh-pronoun"},
+  {"symbol": "WRB", "info": "wh-adverb"}];
+
+var postags_filter = document.getElementById("postags_filter");
+for (let tag of postags) {
+  var option = document.createElement("option");
+  option.text = tag.symbol + " - " + tag.info;
+  option.value = tag.symbol;
+  postags_filter.appendChild(option);
+}
+
 // EventListeners for weight sliders
 var sliders = document.getElementsByClassName("slider");
 
@@ -31,6 +68,16 @@ for(var i=0; i<(sliders.length); i++) {
     weights[slider_id] = this.value;
   });
 };
+
+// EventListener for POSTag Filter and Mode
+for (let id_ of ["postags_filter", "postags_mode"]) {
+  selector = document.getElementById(id_);
+  selector.addEventListener("change", create_postags_graph);
+};
+
+// EventListener for Stopwords Mode
+selector = document.getElementById("stopwords_mode");
+selector.addEventListener("change", create_stopwords_graph);
 
 // EventListener for Sentiment detail view
 for (let id_ of ["sentiment_scale", "sentiment_window"]) {
@@ -47,6 +94,15 @@ for (let id_ of ["speechtempo_scale", "speechtempo_window"]) {
 // EventListener for color selector
 color_selector = document.getElementById("colorselect");
 color_selector.addEventListener("change", update_graph);
+
+// Shorten film title plus year.
+function title_short(d) {
+  if (d.title.length > 24){
+    return d.title.substring(0, 24) + "..." + " (" + display_compare.year + ")"
+  } else {
+    return d.title  + " (" + d.year + ")"
+  }
+};
 
 // Update distances by current weights and get graph data
 function update_graph(){
@@ -702,7 +758,7 @@ function create_speechtempo_graph() {
       .attr('height', '250px')
       .attr('display', 'inline-block');
 
-  var margin = {top: 10, right: 10, bottom: 40, left: 40},
+  var margin = {top: 10, right: 10, bottom: 40, left: 50},
     width = width - margin.left - margin.right,
     height = 250 - margin.top - margin.bottom;
 
@@ -756,14 +812,15 @@ function create_speechtempo_graph() {
       .style("stroke", "darkred")
       .style("stroke-width", 1);
 
-    if (compare_left_film.title.length > 24){
-      title_short = compare_left_film.title.substring(0, 24) + "..." + " (" + compare_left_film.year + ")";
-    } else {
-      title_short = compare_left_film.title  + " (" + compare_left_film.year + ")";
-    }
-
-    svg_line.append("circle").attr("cx",width + margin.right + margin.left + 20).attr("cy",height / 2).attr("r", 5).style("fill", "darkred");
-    svg_line.append("text").attr("x", width + margin.right + margin.left + 30).attr("y", height / 2).text(title_short).style("font-size", "90%").attr("alignment-baseline","middle");
+    svg_line.append("circle")
+      .attr("cx",width + margin.right + margin.left + 20)
+      .attr("cy",height / 2).attr("r", 5)
+      .style("fill", "darkred");
+    svg_line.append("text")
+      .attr("x", width + margin.right + margin.left + 30)
+      .attr("y", height / 2).text(title_short(compare_left_film))
+      .style("font-size", "90%")
+      .attr("alignment-baseline","middle");
   }
 
   if (y_data_right.length > 0){
@@ -779,14 +836,17 @@ function create_speechtempo_graph() {
       .style("stroke", "blue")
       .style("stroke-width", 1);
 
-    if (compare_right_film.title.length > 24){
-      title_short = compare_right_film.title.substring(0, 24) + "..." + " (" + compare_right_film.year + ")";
-    } else {
-      title_short = compare_right_film.title  + " (" + compare_right_film.year + ")";
-    }
-
-    svg_line.append("circle").attr("cx",width + margin.right + margin.left + 20).attr("cy",(height / 2) + 30).attr("r", 5).style("fill", "blue");
-    svg_line.append("text").attr("x", width + margin.right + margin.left + 30).attr("y", (height / 2) + 30).text(title_short).style("font-size", "90%").attr("alignment-baseline","middle");
+    svg_line.append("circle")
+      .attr("cx",width + margin.right + margin.left + 20)
+      .attr("cy",(height / 2) + 30)
+      .attr("r", 5)
+      .style("fill", "blue");
+    svg_line.append("text")
+      .attr("x", width + margin.right + margin.left + 30)
+      .attr("y", (height / 2) + 30)
+      .text(title_short(compare_right_film))
+      .style("font-size", "90%")
+      .attr("alignment-baseline","middle");
   }
 
   var yAxis = d3.axisLeft()
@@ -829,7 +889,7 @@ function create_speechtempo_graph() {
 };
 
 // Create graph for Sentiment detail view
-function create_sentiment_graph(cent_min, window_size) {
+function create_sentiment_graph() {
   var graph = document.getElementsByClassName("graph_sentiment")[0];
     while (graph.lastChild) {
       graph.removeChild(graph.lastChild);
@@ -846,7 +906,7 @@ function create_sentiment_graph(cent_min, window_size) {
       .attr('height', '250px')
       .attr('display', 'inline-block');
 
-  var margin = {top: 10, right: 10, bottom: 40, left: 40},
+  var margin = {top: 10, right: 10, bottom: 40, left: 50},
     width = width - margin.left - margin.right,
     height = 250 - margin.top - margin.bottom;
 
@@ -902,14 +962,17 @@ function create_sentiment_graph(cent_min, window_size) {
       .style("stroke", "darkred")
       .style("stroke-width", 1);
 
-    if (compare_left_film.title.length > 24){
-      title_short = compare_left_film.title.substring(0, 24) + "..." + " (" + compare_left_film.year + ")";
-    } else {
-      title_short = compare_left_film.title  + " (" + compare_left_film.year + ")";
-    }
-
-    svg_line.append("circle").attr("cx",width + margin.right + margin.left + 20).attr("cy",height / 2).attr("r", 5).style("fill", "darkred");
-    svg_line.append("text").attr("x", width + margin.right + margin.left + 30).attr("y", height / 2).text(title_short).style("font-size", "90%").attr("alignment-baseline","middle");
+    svg_line.append("circle")
+      .attr("cx",width + margin.right + margin.left + 20)
+      .attr("cy",height / 2)
+      .attr("r", 5)
+      .style("fill", "darkred");
+    svg_line.append("text")
+      .attr("x", width + margin.right + margin.left + 30)
+      .attr("y", height / 2)
+      .text(title_short(compare_left_film))
+      .style("font-size", "90%")
+      .attr("alignment-baseline","middle");
   }
 
   if (y_data_right.length > 0){
@@ -925,14 +988,17 @@ function create_sentiment_graph(cent_min, window_size) {
       .style("stroke", "blue")
       .style("stroke-width", 1);
 
-    if (compare_right_film.title.length > 24){
-      title_short = compare_right_film.title.substring(0, 24) + "..." + " (" + compare_right_film.year + ")";
-    } else {
-      title_short = compare_right_film.title  + " (" + compare_right_film.year + ")";
-    }
-
-    svg_line.append("circle").attr("cx",width + margin.right + margin.left + 20).attr("cy",(height / 2) + 30).attr("r", 5).style("fill", "blue");
-    svg_line.append("text").attr("x", width + margin.right + margin.left + 30).attr("y", (height / 2) + 30).text(title_short).style("font-size", "90%").attr("alignment-baseline","middle");
+    svg_line.append("circle")
+      .attr("cx",width + margin.right + margin.left + 20)
+      .attr("cy",(height / 2) + 30)
+      .attr("r", 5)
+      .style("fill", "blue");
+    svg_line.append("text")
+      .attr("x", width + margin.right + margin.left + 30)
+      .attr("y", (height / 2) + 30)
+      .text(title_short(compare_right_film))
+      .style("font-size", "90%")
+      .attr("alignment-baseline","middle");
   }
 
   var yAxis = d3.axisLeft()
@@ -972,6 +1038,393 @@ function create_sentiment_graph(cent_min, window_size) {
         .style("text-anchor", "middle")
         .text("minutes of runtime");
   }
+};
+
+function create_postags_graph() {
+  var graph = document.getElementById("graph_postags");
+    while (graph.lastChild) {
+      graph.removeChild(graph.lastChild);
+  }
+
+  var postags_filter = $('select[id=postags_filter]').val();
+  var postags_mode = $('select[id=postags_mode]').val();
+
+  var graphbox = d3.select('.graphbox').node();
+  width = graphbox.getBoundingClientRect().width - 20;
+
+  var svg = d3.select("#graph_postags").append("svg")
+      .attr('width', '100%')
+      .attr('height', '350px')
+      .attr('display', 'inline-block');
+
+  var margin = {top: 10, right: 10, bottom: 40, left: 50},
+    width = width - margin.left - margin.right,
+    height = 350 - margin.top - margin.bottom;
+
+  svg.append('rect') // outline for reference
+    .attr("x", margin.left)
+    .attr("y", margin.top)
+    .attr("width", width)
+    .attr("height", height)
+    .attr("stroke", 'black')
+    .attr('stroke-width', 0.5)
+    .attr("fill",'white'); 
+
+  var data_left = [];
+  var data_right = [];
+  var x_data = [];
+  var y_data_left = [];
+  var y_data_right = [];
+  var y_data_whole = [];
+
+  if (typeof compare_left_film !== "undefined") {
+    data_left = compare_left_film.top_postags.filter(d => (d.term + " ").includes(postags_filter + " "));
+    x_data = data_left.map(function(d) { return d.term; }).sort();
+    if (postags_mode === "1") {
+      y_data_left = data_left.map(function(d) { return d.score; });
+    } else if (postags_mode === "2") {
+      y_data_left = data_left.map(function(d) { return d.score_diff; });
+    }
+
+    svg.append("circle")
+      .attr("cx",width + margin.right + margin.left + 20)
+      .attr("cy",height / 2)
+      .attr("r", 5)
+      .style("fill", "darkred");
+    svg.append("text")
+      .attr("x", width + margin.right + margin.left + 30)
+      .attr("y", height / 2)
+      .text(title_short(compare_left_film))
+      .style("font-size", "90%")
+      .attr("alignment-baseline","middle");
+  }
+  if (typeof compare_right_film !== "undefined") {
+    data_right = compare_right_film.top_postags.filter(d => (d.term + " ").includes(postags_filter + " "));
+    x_data = x_data.concat(data_right.map(function(d) { return d.term; }));
+    x_data = [...new Set(x_data)].sort(); 
+    if (postags_mode === "1") {
+      y_data_right = data_right.map(function(d) { return d.score; });
+    } else if (postags_mode === "2") {
+      y_data_right = data_right.map(function(d) { return d.score_diff; });
+    }
+
+    svg.append("circle")
+      .attr("cx",width + margin.right + margin.left + 20)
+      .attr("cy",(height / 2) + 30)
+      .attr("r", 5)
+      .style("fill", "blue");
+    svg.append("text")
+      .attr("x", width + margin.right + margin.left + 30)
+      .attr("y", (height / 2) + 30)
+      .text(title_short(compare_right_film))
+      .style("font-size", "90%")
+      .attr("alignment-baseline","middle");
+  }
+
+  y_data_whole = y_data_left.concat(y_data_right);
+
+  var x = d3.scaleBand().range([0, width]),
+      y = d3.scaleLinear().range([height, 0]);
+
+  var g = svg.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  extent_positive = Math.ceil(20*d3.max(y_data_whole))/20;
+  extent_negative = -1*Math.ceil(-20*d3.min(y_data_whole))/20;
+
+  if (postags_mode === "2") {
+    extent_positive = d3.max([extent_positive, -1*extent_negative]);
+    extent_negative = d3.min([extent_negative, -1*extent_positive]);
+  }
+
+  x.domain(x_data);
+  y.domain([extent_negative, extent_positive]);
+
+  g.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x).tickSize(0))
+      .selectAll('text')
+        .style("display", "none")
+        .attr("dy", "1.21em");
+
+  g.append("g")
+      .attr("class", "axis axis--y")
+      .call(d3.axisLeft(y).ticks(8));
+      
+  svg.append("text")             
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0)
+      .attr("x",0 - (height / 2) - margin.top)
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text(function() { if (postags_mode === "1") { return "tf-idf score"}
+                          else { return "diff to global average"}});
+
+  function select_axis_label(d) {
+        return d3.select('#graph_postags').select('.axis--x')
+          .selectAll('text')
+          .filter(function(x) { return x == d.term; });
+  };
+
+  g.selectAll(".bar0")
+      .data(x_data)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(term) { return x(term); })
+        .attr("y", 0)
+        .attr("width", x.bandwidth())
+        .attr("height", height)
+        .style("fill", "white")
+        .on('mouseover', function(term) {
+            select_axis_label({"term": term}).attr('style', "display: default;");
+        })
+        .on('mouseout', function(term) {
+            select_axis_label({"term": term}).attr('style', "display: none;");
+        });
+
+  g.selectAll(".bar1")
+      .data(data_left)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d.term); })
+        .attr("y", function(d) { if (postags_mode === "1") { return y(d.score); }
+                                  else if (postags_mode === "2") { 
+                                    if (d.score_diff >= 0) { return y(d.score_diff); }
+                                    else { return y(0); } }})
+        .attr("width", x.bandwidth())
+        .attr("height", function(d) { if (postags_mode === "1") { return y(0) - y(d.score); }
+                                  else if (postags_mode === "2") { 
+                                    if (d.score_diff >= 0) { return y(0) - y(d.score_diff); }
+                                    else { return y(d.score_diff) - y(0);} }})
+        .style("fill", "darkred")
+        .style("opacity", "0.5")
+        .on('mouseover', function(d) {
+            d3.select(this).style("opacity", "1.0");
+            select_axis_label(d).attr('style', "display: default;");
+        })
+        .on('mouseout', function(d) {
+            d3.select(this).style("opacity", "0.5");
+            select_axis_label(d).attr('style', "display: none;");
+        });
+
+  g.selectAll(".bar2")
+      .data(data_right)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d.term); })
+        .attr("y", function(d) { if (postags_mode === "1") { return y(d.score); }
+                                  else if (postags_mode === "2") { 
+                                    if (d.score_diff >= 0) { return y(d.score_diff); }
+                                    else { return y(0); } }})
+        .attr("width", x.bandwidth())
+        .attr("height", function(d) { if (postags_mode === "1") { return y(0) - y(d.score); }
+                                  else if (postags_mode === "2") { 
+                                    if (d.score_diff >= 0) { return y(0) - y(d.score_diff); }
+                                    else { return y(d.score_diff) - y(0);} }})
+        .style("fill", "blue")
+        .style("opacity", "0.5")
+        .on('mouseover', function(d) {
+            d3.select(this).style("opacity", "1.0");
+            select_axis_label(d).attr('style', "display: default;");
+        })
+        .on('mouseout', function(d) {
+            d3.select(this).style("opacity", "0.5");
+            select_axis_label(d).attr('style', "display: none;");
+      });
+};
+
+function create_stopwords_graph() {
+  var graph = document.getElementById("graph_stopwords");
+    while (graph.lastChild) {
+      graph.removeChild(graph.lastChild);
+  }
+  
+  var stopwords_mode = $('select[id=stopwords_mode]').val();
+
+  var graphbox = d3.select('.graphbox').node();
+  width = graphbox.getBoundingClientRect().width - 20;
+
+  var svg = d3.select("#graph_stopwords").append("svg")
+      .attr('width', '100%')
+      .attr('height', '350px')
+      .attr('display', 'inline-block');
+
+  var margin = {top: 10, right: 10, bottom: 40, left: 50},
+    width = width - margin.left - margin.right,
+    height = 350 - margin.top - margin.bottom;
+
+  svg.append('rect') // outline for reference
+    .attr("x", margin.left)
+    .attr("y", margin.top)
+    .attr("width", width)
+    .attr("height", height)
+    .attr("stroke", 'black')
+    .attr('stroke-width', 0.5)
+    .attr("fill",'white'); 
+
+  var data_left = [];
+  var data_right = [];
+  var x_data = [];
+  var y_data_left = [];
+  var y_data_right = [];
+  var y_data_whole = [];
+
+  if (typeof compare_left_film !== "undefined") {
+    data_left = compare_left_film.top_stopwords;
+    x_data = data_left.map(function(d) { return d.term; }).sort();
+    if (stopwords_mode === "1") {
+      y_data_left = data_left.map(function(d) { return d.score; });
+    } else if (stopwords_mode === "2") {
+      y_data_left = data_left.map(function(d) { return d.score_diff; });
+    }
+
+    svg.append("circle")
+      .attr("cx",width + margin.right + margin.left + 20)
+      .attr("cy",height / 2)
+      .attr("r", 5)
+      .style("fill", "darkred");
+    svg.append("text")
+      .attr("x", width + margin.right + margin.left + 30)
+      .attr("y", height / 2)
+      .text(title_short(compare_left_film))
+      .style("font-size", "90%")
+      .attr("alignment-baseline","middle");
+  }
+  if (typeof compare_right_film !== "undefined") {
+    data_right = compare_right_film.top_stopwords;
+    x_data = x_data.concat(data_right.map(function(d) { return d.term; }));
+    x_data = [...new Set(x_data)].sort(); 
+    if (stopwords_mode === "1") {
+      y_data_right = data_right.map(function(d) { return d.score; });
+    } else if (stopwords_mode === "2") {
+      y_data_right = data_right.map(function(d) { return d.score_diff; });
+    }
+
+    svg.append("circle")
+      .attr("cx",width + margin.right + margin.left + 20)
+      .attr("cy",(height / 2) + 30)
+      .attr("r", 5)
+      .style("fill", "blue");
+    svg.append("text")
+      .attr("x", width + margin.right + margin.left + 30)
+      .attr("y", (height / 2) + 30)
+      .text(title_short(compare_right_film))
+      .style("font-size", "90%")
+      .attr("alignment-baseline","middle");
+  }
+
+  y_data_whole = y_data_left.concat(y_data_right);
+
+  var x = d3.scaleBand().range([0, width]),
+      y = d3.scaleLinear().range([height, 0]);
+
+  var g = svg.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  extent_positive = Math.ceil(20*d3.max(y_data_whole))/20;
+  extent_negative = -1*Math.ceil(-20*d3.min(y_data_whole))/20;
+
+  if (stopwords_mode === "2") {
+    extent_positive = d3.max([extent_positive, -1*extent_negative]);
+    extent_negative = d3.min([extent_negative, -1*extent_positive]);
+  }
+
+  x.domain(x_data);
+  y.domain([extent_negative, extent_positive]);
+
+  g.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x).tickSize(0))
+      .selectAll('text')
+        .style("display", "none")
+        .attr("dy", "1.21em");
+
+  g.append("g")
+      .attr("class", "axis axis--y")
+      .call(d3.axisLeft(y).ticks(8));
+      
+  svg.append("text")             
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0)
+      .attr("x",0 - (height / 2) - margin.top)
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text(function() { if (stopwords_mode === "1") { return "tf-idf score"}
+                          else { return "diff to global average"}});
+
+  function select_axis_label(d) {
+        return d3.select('#graph_stopwords').select('.axis--x')
+          .selectAll('text')
+          .filter(function(x) { return x == d.term; });
+      }
+
+  g.selectAll(".bar0")
+      .data(x_data)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(term) { return x(term); })
+        .attr("y", 0)
+        .attr("width", x.bandwidth())
+        .attr("height", height)
+        .style("fill", "white")
+        .on('mouseover', function(term) {
+            select_axis_label({"term": term}).attr('style', "display: default;");
+        })
+        .on('mouseout', function(term) {
+            select_axis_label({"term": term}).attr('style', "display: none;");
+        });
+
+  g.selectAll(".bar1")
+      .data(data_left)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d.term); })
+        .attr("y", function(d) { if (stopwords_mode === "1") { return y(d.score); }
+                                  else if (stopwords_mode === "2") { 
+                                    if (d.score_diff >= 0) { return y(d.score_diff); }
+                                    else { return y(0); } }})
+        .attr("width", x.bandwidth())
+        .attr("height", function(d) { if (stopwords_mode === "1") { return y(0) - y(d.score); }
+                                  else if (stopwords_mode === "2") { 
+                                    if (d.score_diff >= 0) { return y(0) - y(d.score_diff); }
+                                    else { return y(d.score_diff) - y(0);} }})
+        .style("fill", "darkred")
+        .style("opacity", "0.5")
+        .on('mouseover', function(d) {
+            d3.select(this).style("opacity", "1.0");
+            select_axis_label(d).attr('style', "display: default;");
+        })
+        .on('mouseout', function(d) {
+            d3.select(this).style("opacity", "0.5");
+            select_axis_label(d).attr('style', "display: none;");
+        });
+
+  g.selectAll(".bar2")
+      .data(data_right)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d.term); })
+        .attr("y", function(d) { if (stopwords_mode === "1") { return y(d.score); }
+                                  else if (stopwords_mode === "2") { 
+                                    if (d.score_diff >= 0) { return y(d.score_diff); }
+                                    else { return y(0); } }})
+        .attr("width", x.bandwidth())
+        .attr("height", function(d) { if (stopwords_mode === "1") { return y(0) - y(d.score); }
+                                  else if (stopwords_mode === "2") { 
+                                    if (d.score_diff >= 0) { return y(0) - y(d.score_diff); }
+                                    else { return y(d.score_diff) - y(0);} }})
+        .style("fill", "blue")
+        .style("opacity", "0.5")
+        .on('mouseover', function(d) {
+            d3.select(this).style("opacity", "1.0");
+            select_axis_label(d).attr('style', "display: default;");
+        })
+        .on('mouseout', function(d) {
+            d3.select(this).style("opacity", "0.5");
+            select_axis_label(d).attr('style', "display: none;");
+      });
 };
 
 // Checks if two films are selected for detail view. If true, then comparison data is requested 
@@ -1023,10 +1476,14 @@ function display_compare(side, film) {
           film_data = result;
 
           if (side === "left") {
+            compare_left_film.top_postags = film_data["top_postags"];
+            compare_left_film.top_stopwords = film_data["top_stopwords"];
             compare_left_film.speechtempo = film_data["speechtempo"];
             compare_left_film.sentiment = film_data["sentiment"];
             compare_left_film.stylometric_features = film_data["stylometric_features"];
           } else {
+            compare_right_film.top_postags = film_data["top_postags"];
+            compare_right_film.top_stopwords = film_data["top_stopwords"];
             compare_right_film.speechtempo = film_data["speechtempo"];
             compare_right_film.sentiment = film_data["sentiment"];
             compare_right_film.stylometric_features = film_data["stylometric_features"];
@@ -1037,15 +1494,11 @@ function display_compare(side, film) {
           cloud = document.getElementById("tokens-cloud-" + side);
           generate_token_cloud(cloud, film_data["top_tokens"]);
 
-          postags_table = document.getElementById("postags_table_" + side);
-          generate_table(postags_table, film_data["top_postags"]);
-
-          stopwords_table = document.getElementById("stopwords_table_" + side);
-          generate_table(stopwords_table, film_data["top_stopwords"]);
-
           if (comparison === true) {
             display_comparison(compare_left_film, compare_right_film);
           }
+          create_postags_graph();
+          create_stopwords_graph();
           create_speechtempo_graph();
           create_sentiment_graph();
           generate_stylometric_table();

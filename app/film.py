@@ -118,7 +118,8 @@ class Film:
     def set_top_postags(self, db):
         # Same as set_top_tokens, but for POS Tag Trigrams model.
         postags_vector = self.vectors[1]
-        top_postags = [(i, x) for (i, x) in enumerate(postags_vector) if x > 0]
+        postags_vector_diff = postags_vector - db.average_postags_vector
+        top_postags = [(i, x) for (i, x) in enumerate(list(zip(postags_vector, postags_vector_diff)))]
         top_postags = db.get_terms("pos_trigrams_id", top_postags)
 
         return top_postags
@@ -126,7 +127,8 @@ class Film:
     def set_top_stopwords(self, db):
         # Same as set_top_tokens, but for Stopwords Distribution model.
         stopwords_vector = self.vectors[2]
-        top_stopwords = [(i, x) for (i, x) in enumerate(stopwords_vector) if x > 0]
+        stopwords_vector_diff = stopwords_vector - db.average_stopwords_vector
+        top_stopwords = [(i, x) for (i, x) in enumerate(list(zip(stopwords_vector, stopwords_vector_diff)))]
         top_stopwords = db.get_terms("stopwords_id", top_stopwords)
 
         return top_stopwords
