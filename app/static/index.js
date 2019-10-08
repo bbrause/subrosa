@@ -315,7 +315,7 @@ var color_genre = d3.scaleOrdinal()
 
 var current_year = new Date().getFullYear();
 var color_year = d3.scaleSequential(d3.interpolatePlasma)
-  .domain([1900,current_year]);
+  .domain([current_year,1920]);
 
 function color(d) {
   var mode = $('select[id=colorselect]').val();
